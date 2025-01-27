@@ -1,0 +1,28 @@
+{
+  "name": "Encoding Context",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Provides context for encoded words.",
+  "background": {
+    "service_worker": "scripts/service-worker.js"
+  },
+  "icons": {
+    "128": "images/icon-128.png",
+    "16": "images/icon-16.png"
+  },
+  "side_panel": {
+    "default_path": "pages/sidepanel.html"
+  },
+  "permissions": ["sidePanel", "contextMenus", "storage", "tabs"],
+  "content_scripts": [
+    {
+      "matches": ["http://*.com/*", "<all_urls>"],
+      "js": [
+        "node_modules/mark.js/dist/mark.js",
+        "scripts/words.js",
+        "scripts/word_finder.js"
+      ],
+      "css": ["styles/word_finder.css"]
+    }
+  ]
+}

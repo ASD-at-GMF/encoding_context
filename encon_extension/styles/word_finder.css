@@ -1,0 +1,63 @@
+/* mark {
+    background: #ff0;
+    color: #000;
+} */
+
+/* Tooltip container */
+.encon_tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.test {
+    position: relative;
+    /* display: inline-block; */
+    border-bottom: 1px dotted black;
+}
+
+/* Tooltip text */
+.encon_tooltip .tooltiptext {
+    z-index: 2147483647;
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.test:hover .tooltiptext,
+.test:hover .tooltiptext,
+.encon_tooltip:hover .tooltiptext,
+.encon_tooltip:focus .tooltiptext,
+.encon_tooltip:focus .tooltiptext {
+    visibility: visible;
+}
+
+.tooltiptext:hover {
+    background-color: grey;
+}
+
+.tooltip .tooltiptext {
+    width: 120px;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -60px;
+}
+
+.tooltipheader {
+    font-size: small;
+    text-decoration: underline;
+    font-weight: bold;
+}
+.tooltipcontext {
+    font-size: xx-small;
+    font-weight: normal;
+}
