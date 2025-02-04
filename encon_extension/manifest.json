@@ -6,6 +6,11 @@
   "background": {
     "service_worker": "scripts/service-worker.js"
   },
+  "action": {
+    "default_popup": "pages/popup.html",
+    "default_icon": "images/icon-16.png"
+  },
+  "options_ui": { "page": "pages/options.html", "open_in_tab": true },
   "icons": {
     "128": "images/icon-128.png",
     "16": "images/icon-16.png"
@@ -14,6 +19,17 @@
     "default_path": "pages/sidepanel.html"
   },
   "permissions": ["sidePanel", "contextMenus", "storage", "tabs"],
+  "commands": {
+    "toggle": {
+      "suggested_key": {
+        "windows": "Ctrl+Shift+F",
+        "mac": "MacCtrl+Shift+F",
+        "chromeos": "Ctrl+Shift+F",
+        "linux": "Ctrl+Shift+F"
+      },
+      "description": "Toggle the encon word finder."
+    }
+  },
   "content_scripts": [
     {
       "matches": ["http://*.com/*", "<all_urls>"],

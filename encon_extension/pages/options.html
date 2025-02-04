@@ -1,0 +1,58 @@
+<html>
+    <head>
+        <title>Encoding Context Options</title>
+        <link rel="stylesheet" href="../styles/options.css" />
+    </head>
+    <body>
+        <h1>Encoding Context</h1>
+        <hr />
+
+        <div>
+            <h2>Color</h2>
+
+            <input id="hightlight-color" type="color" />
+            <label for="hightlight-color">Highlight Color</label><br />
+
+            <input id="label-color" type="color" />
+            <label for="label-color">Label Color</label><br />
+        </div>
+        <hr />
+        <div>
+            <h2>Highlight Style</h2>
+
+            <input
+                class="highlight-style"
+                type="checkbox"
+                id="highlight"
+                name="highlight"
+                value="highlight"
+            />
+            <label for="highlight">Highlight</label><br />
+
+            <input
+                class="highlight-style"
+                type="checkbox"
+                id="underline"
+                name="underline"
+                value="underline"
+            />
+            <label for="underline">Underline</label><br />
+
+            <input
+                class="highlight-style"
+                type="checkbox"
+                id="italicize"
+                name="italicize"
+                value="italicize"
+            />
+            <label for="italicize">Italicize</label><br />
+        </div>
+        <hr />
+        <div>
+            <div id="status"></div>
+            <button id="save">Save</button>
+        </div>
+
+        <script src="../scripts/options.js"></script>
+    </body>
+</html>
