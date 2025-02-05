@@ -1,5 +1,7 @@
-<html>
+<html lang="en">
     <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Encoding Context Popup</title>
         <link rel="stylesheet" href="../styles/popup.css" />
     </head>
@@ -8,19 +10,23 @@
         <hr />
         <div class="small-container">
             <div>
-                <span>Toggle Word Finder</span>
+                <span aria-label="Toggle Word Finder">Toggle Word Finder</span>
             </div>
             <div>
-                <label class="switch">
-                    <input id="toggle-checkbox" type="checkbox" />
+                <label class="switch" aria-label="Word Finder Toggle">
+                    <input id="toggle-checkbox" type="checkbox" aria-label="Enable or disable Word Finder" />
                     <span class="slider"></span>
                 </label>
             </div>
         </div>
         <hr />
         <div class="container">
-            <div><button id="go-to-options">Options</button> <br /></div>
-            <div><button id="hotkey">Shortcuts</button> <br /></div>
+            <div>
+                <button id="go-to-options" aria-label="Go to Options">Options</button><br />
+            </div>
+            <div>
+                <button id="hotkey" aria-label="View Shortcuts">Shortcuts</button><br />
+            </div>
         </div>
         <hr />
         <script src="../scripts/popup.js"></script>

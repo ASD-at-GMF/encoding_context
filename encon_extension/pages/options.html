@@ -1,5 +1,7 @@
-<html>
+<html lang="en">
     <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Encoding Context Options</title>
         <link rel="stylesheet" href="../styles/options.css" />
     </head>
@@ -10,10 +12,10 @@
         <div>
             <h2>Color</h2>
 
-            <input id="hightlight-color" type="color" />
+            <input id="hightlight-color" type="color" aria-label="Highlight Color" />
             <label for="hightlight-color">Highlight Color</label><br />
 
-            <input id="label-color" type="color" />
+            <input id="label-color" type="color" aria-label="Label Color" />
             <label for="label-color">Label Color</label><br />
         </div>
         <hr />
@@ -26,6 +28,7 @@
                 id="highlight"
                 name="highlight"
                 value="highlight"
+                aria-label="Highlight"
             />
             <label for="highlight">Highlight</label><br />
 
@@ -35,6 +38,7 @@
                 id="underline"
                 name="underline"
                 value="underline"
+                aria-label="Underline"
             />
             <label for="underline">Underline</label><br />
 
@@ -44,13 +48,14 @@
                 id="italicize"
                 name="italicize"
                 value="italicize"
+                aria-label="Italicize"
             />
             <label for="italicize">Italicize</label><br />
         </div>
         <hr />
         <div>
-            <div id="status"></div>
-            <button id="save">Save</button>
+            <div id="status" role="status" aria-live="polite"></div>
+            <button id="save" aria-label="Save Settings">Save</button>
         </div>
 
         <script src="../scripts/options.js"></script>
