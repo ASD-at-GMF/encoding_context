@@ -18,15 +18,27 @@ window.onload = function () {
     if (marks) {
       marks.forEach((mark) => {
         if (mark.classList == "") {
-          mark.innerHTML += template;
           mark.classList.add("encon_tooltip");
           mark.tabIndex = "0";
-          mark.children[0].tabIndex = "0";
-          mark.children[0].classList.add("tooltiptext");
-          mark.children[0].children[0].classList.add("tooltipheader");
-          mark.children[0].children[2].classList.add("tooltipcontext");
-          mark.children[0].children[0].textContent = mark.textContent;
-          mark.children[0].children[2].textContent = value;
+
+          // Create the tooltip dynamically and append to body
+          let tooltip = document.createElement("div");
+          tooltip.classList.add("tooltiptext");
+          tooltip.innerHTML = `<strong>${mark.textContent}</strong><br>${value}`;
+          tooltip.style.position = "absolute";
+          tooltip.style.backgroundColor = "rgba(51, 51, 51, 1)";
+          tooltip.style.color = "white";
+          tooltip.style.padding = "5px 10px";
+          tooltip.style.borderRadius = "5px";
+          tooltip.style.visibility = "hidden";
+          tooltip.style.opacity = "0";
+          tooltip.style.transition = "opacity 0.2s ease-in-out";
+          tooltip.style.pointerEvents = "none";
+          tooltip.style.whiteSpace = "normal";
+          tooltip.style.maxWidth = "300px"; // Set a max width to avoid too wide tooltips
+          tooltip.style.zIndex = "1000";          
+
+          document.body.appendChild(tooltip); // Append tooltip to body
 
           // On click of word open its context in the side_panel
           mark.addEventListener("click", function () {
@@ -36,63 +48,42 @@ window.onload = function () {
             });
           });
 
-          // Adjust tooltip position dynamically to prevent overflow
+          // Show tooltip and adjust position
           mark.addEventListener("mouseenter", () => {
-            const tooltipText = mark.querySelector(".tooltiptext");
+            tooltip.style.visibility = "visible";
+            tooltip.style.opacity = "1";
 
-            // Temporarily make the tooltip visible to calculate its position
-            tooltipText.style.visibility = "hidden";
-            tooltipText.style.opacity = "0";
-            tooltipText.style.display = "block";
+            const rect = mark.getBoundingClientRect();
+            const tooltipRect = tooltip.getBoundingClientRect();
+            let left = rect.left + window.scrollX + (rect.width - tooltipRect.width) / 2;
+            let top = rect.top + window.scrollY - tooltipRect.height - 5; // Above the word
 
-            // Force reflow to ensure accurate positioning on first hover
-            tooltipText.getBoundingClientRect();
-
-            const rect = tooltipText.getBoundingClientRect();
-            const viewWidth = window.innerWidth;
-            const viewHeight = window.innerHeight;
-
-            // Reset tooltip position
-            tooltipText.style.left = "50%";
-            tooltipText.style.bottom = "125%";
-            tooltipText.style.transform = "translateX(-50%)";
-            tooltipText.style.top = "auto";
-
-            // Adjust if tooltip overflows right
-            if (rect.right > viewWidth) {
-              tooltipText.style.left = "auto";
-              tooltipText.style.right = "0";
-              tooltipText.style.transform = "none";
+            // Prevent tooltip from overflowing screen
+            if (left + tooltipRect.width > window.innerWidth) {
+                left = window.innerWidth - tooltipRect.width - 10;
+            }
+            if (left < 0) {
+                left = 10;
+            }
+            if (top < 0) {
+                top = rect.bottom + window.scrollY + 5; // Move below the word
+                tooltip.classList.add("below");
+            } else {
+                tooltip.classList.remove("below");
             }
 
-            // Adjust if tooltip overflows left
-            if (rect.left < 0) {
-              tooltipText.style.left = "0";
-              tooltipText.style.transform = "none";
-            }
-
-            // Adjust if tooltip overflows top
-            if (rect.top < 0) {
-              tooltipText.style.bottom = "auto"; // Reset bottom position
-              tooltipText.style.top = "125%"; // Position below the word
-              tooltipText.style.transform = "translateX(-50%)";
-            }
-
-            // Restore visibility after positioning
-            tooltipText.style.visibility = "visible";
-            tooltipText.style.opacity = "1";
-            tooltipText.style.display = "";
+            tooltip.style.left = `${left}px`;
+            tooltip.style.top = `${top}px`;
           });
 
-          // Hide tooltip on mouse leave
+          // Hide tooltip
           mark.addEventListener("mouseleave", () => {
-            const tooltipText = mark.querySelector(".tooltiptext");
-            tooltipText.style.visibility = "hidden";
-            tooltipText.style.opacity = "0";
-            tooltipText.style.display = "none"; // Reset to ensure proper recalculation on next hover
+            tooltip.style.visibility = "hidden";
+            tooltip.style.opacity = "0";
           });
         }
       });
     }
   }
 };
+

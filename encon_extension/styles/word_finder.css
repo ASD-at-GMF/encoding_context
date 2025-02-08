@@ -8,9 +8,10 @@ mark {
 
 /* Tooltip container */
 .encon_tooltip {
-    position: relative;
+    position: relative; /* Position relative for absolute tooltip */
     display: inline-block;
     cursor: pointer; /* Changes cursor to pointer on hover */
+    
 }
 
 /* Tooltip text (popup) */
