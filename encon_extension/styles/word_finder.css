@@ -1,63 +1,90 @@
-/* mark {
-    background: #ff0;
-    color: #000;
-} */
+/* Highlighted word style */
+mark {
+    background: #ffecb3; /* Softer yellow background for highlighting */
+    color: #000; /* Black text for better contrast */
+    padding: 2px 4px;
+    border-radius: 4px; /* Rounded corners for a smoother look */
+}
 
 /* Tooltip container */
 .encon_tooltip {
-    position: relative;
+    position: relative; /* Position relative for absolute tooltip */
     display: inline-block;
-    border-bottom: 1px dotted black;
+    cursor: pointer; /* Changes cursor to pointer on hover */
+    
 }
 
-.test {
-    position: relative;
-    /* display: inline-block; */
-    border-bottom: 1px dotted black;
-}
-
-/* Tooltip text */
+/* Tooltip text (popup) */
 .encon_tooltip .tooltiptext {
-    z-index: 2147483647;
     visibility: hidden;
-    width: 120px;
-    background-color: black;
-    color: #fff;
-    text-align: center;
-    padding: 5px 0;
-    border-radius: 6px;
-
-    /* Position the tooltip text - see examples below! */
+    width: 220px;
+    background-color: #333; /* Dark gray background for a modern look */
+    color: #fff; /* White text for contrast */
+    text-align: left; /* Align text to the left for better reading flow */
+    padding: 10px; /* Added padding for spacing */
+    border-radius: 8px; /* Rounded corners for a modern design */
+    box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.25); /* Slight shadow for depth */
     position: absolute;
-    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth animations */
+    opacity: 0; /* Start invisible */
+    z-index: 2147483647;
+    white-space: normal;
+    font-size: 12px !important; /* Slightly smaller font size for readability */
+    font-family: Arial, sans-serif !important; /* Force Arial font */
+    font-weight: normal !important; /* Prevent bold inheritance */
+    font-style: normal !important; /* Prevent italic inheritance */
+    text-transform: none !important; /* Prevent capitalization inheritance */
+    text-decoration: none !important; /* Prevent underline inheritance */
 }
 
-/* Show the tooltip text when you mouse over the tooltip container */
-.test:hover .tooltiptext,
-.test:hover .tooltiptext,
+/* Show the tooltip text on hover or focus */
 .encon_tooltip:hover .tooltiptext,
-.encon_tooltip:focus .tooltiptext,
 .encon_tooltip:focus .tooltiptext {
     visibility: visible;
+    opacity: 1; /* Fade in */
+    transform: translateX(-50%) translateY(-5px); /* Slight upward movement */
 }
 
-.tooltiptext:hover {
-    background-color: grey;
-}
-
-.tooltip .tooltiptext {
-    width: 120px;
-    bottom: 100%;
-    left: 50%;
-    margin-left: -60px;
-}
-
+/* Tooltip header */
 .tooltipheader {
-    font-size: small;
+    font-size: 14px !important; /* Slightly smaller size for the header */
+    font-weight: bold; /* Header text stays bold */
+    margin-bottom: 6px; /* Reduced spacing for compactness */
     text-decoration: underline;
-    font-weight: bold;
+    color: #ffecb3; /* Softer yellow for a complementary look */
+    font-family: Arial, sans-serif !important; /* Force Arial font */
+    font-style: normal !important; /* Prevent italic inheritance */
+    text-transform: none !important; /* Prevent capitalization inheritance */
 }
+
+/* Tooltip context */
 .tooltipcontext {
-    font-size: xx-small;
-    font-weight: normal;
+    font-size: 12px !important; /* Slightly smaller size for the context text */
+    line-height: 1.4; /* Adjusted line height for better readability */
+    color: #e0e0e0; /* Light gray for softer contrast */
+    font-family: Arial, sans-serif !important; /* Force Arial font */
+    font-style: normal !important; /* Prevent italic inheritance */
+    font-weight: normal !important; /* Prevent bold inheritance */
+    text-transform: none !important; /* Prevent capitalization inheritance */
+    text-decoration: none !important; /* Prevent underline inheritance */
+}
+
+/* Remove arrow (dialogue box styling) */
+.encon_tooltip .tooltiptext::after {
+    content: none; /* Removes the arrow completely */
+}
+
+/* Tooltip hover effect */
+.tooltiptext:hover {
+    background-color: #444; /* Slightly lighter on hover */
+}
+
+/* Remove bottom positioning when tooltip is moved below the word */
+.encon_tooltip .tooltiptext.below {
+    bottom: auto;
+    top: 125%;
+    transform: translateX(-50%);
 }
