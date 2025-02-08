@@ -1,0 +1,15 @@
+{
+  "name": "encon_extension",
+  "version": "1.0.0",
+  "description": "First test of the Chrome Extension that can highlight words and open the sidepanel.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mark.js": "8.11.1"
+  }
+}
