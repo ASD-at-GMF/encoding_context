@@ -1,0 +1,30 @@
+hr {
+    border: 1px dashed #15428a;
+}
+
+h1 {
+    font-size: x-large;
+    color: #15428a;
+    font-weight: bold;
+}
+h2 {
+    font-size: large;
+    color: #15428a;
+}
+
+button {
+    background-color: #327da8;
+    border-color: #15428a;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    /* font-size: 16px; */
+    margin: 4px 2px;
+    border-radius: 4px;
+}
+
+body {
+    color: #15428a;
+}
