@@ -1,0 +1,46 @@
+h1 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #e0e0e0;
+    margin: 16px 0;
+}
+
+#definition-word {
+    color: #000000;
+    font-size: 20px;
+    margin-top: 16px;
+    margin-bottom: 8px;
+}
+
+#definition-text {
+    line-height: 1.5;
+    color: #444;
+    font-size: 16px
+}
+
+.chip {
+    display: inline-block;
+    padding: 4px 12px;
+    margin: 4px;
+    border-radius: 16px;
+    background-color: #ff6c6c;
+    font-size: 14px;
+}
+
+#categories-container {
+    margin-top: 12px;
+}
+
+#definition-link {
+    color: #1a73e8;
+    text-decoration: none;
+}
+
+#definition-link:hover {
+    text-decoration: underline;
+}
