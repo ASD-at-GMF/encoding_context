@@ -45,7 +45,7 @@ async function getStatus() {
   try {
     // const url = "http://localhost:3000/status";
     // const url = "https://pbenzoni.pythonanywhere.com/status";
-    const url = "http://context.tools/status";
+    const url = "https://context.tools/status";
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
