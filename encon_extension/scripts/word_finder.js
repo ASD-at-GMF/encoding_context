@@ -13,7 +13,7 @@ const template = `
 async function getWords() {
   try {
     // const url = "http://localhost:3000/words";
-    const url = "http://context.tools/words";
+    const url = "https://context.tools/words";
     // const url = "https://pbenzoni.pythonanywhere.com/words";
     const response = await fetch(url);
     if (!response.ok) {
