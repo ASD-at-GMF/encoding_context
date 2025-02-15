@@ -20,9 +20,36 @@ function updateContext(word) {
   // Hide instructions.
   document.body.querySelector("#select-a-word").style.display = "none";
 
-  // Show word and context.
-  document.body.querySelector("#definition-word").innerText = word;
-  document.body.querySelector("#definition-text").innerText =
-    words.get(word.toLowerCase()) ??
-    `Unknown word! Supported words: ${Object.keys(words).join(", ")}`;
+  // const wordDetails = words.get(word.toLowerCase());
+  chrome.storage.session.get("wordDetails", ({ wordDetails }) => {
+    console.log(wordDetails);
+    if (!wordDetails) {
+      document.body.querySelector("#definition-word").innerText = word;
+      document.body.querySelector("#definition-text").innterText =
+        `Unknown word!}`;
+      document.body.querySelector(
+        "#classification-labels-container",
+      ).innerHTML = "";
+      document.body.querySelector("#definition-link").href =
+        "https://extremismterms.adl.org/";
+      return;
+    }
+
+    // Show word, definition, link, and classification chips.
+    document.body.querySelector("#definition-word").innerText = word;
+    document.body.querySelector("#definition-text").innerText =
+      wordDetails.definition;
+    document.body.querySelector("#definition-link").href = wordDetails.adlLink;
+
+    // Add a chip for each classification.
+    const classificationLabelsContainer = document.body.querySelector(
+      "#classification-labels-container",
+    );
+    classificationLabelsContainer.innerHTML = wordDetails.classifications
+      .map(
+        (classification) =>
+          `<span class="chip" role="tag" aria-label="Classified as ${classification}">${classification}</span>`,
+      )
+      .join("");
+  });
 }
