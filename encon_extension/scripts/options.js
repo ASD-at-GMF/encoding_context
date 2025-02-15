@@ -40,3 +40,20 @@ async function restoreOptions() {
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
 document.getElementById("save").addEventListener("click", saveOptions);
+
+async function getStatus() {
+  try {
+    // const url = "http://localhost:3000/status";
+    // const url = "https://pbenzoni.pythonanywhere.com/status";
+    const url = "http://context.tools/status";
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+    const json = await response.json();
+    console.log(json);
+  } catch (error) {
+    console.error("Error: " + error.message);
+  }
+}
+getStatus();

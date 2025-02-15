@@ -20,25 +20,36 @@ function updateContext(word) {
   // Hide instructions.
   document.body.querySelector("#select-a-word").style.display = "none";
 
-  const wordDetails = words.get(word.toLowerCase());
+  // const wordDetails = words.get(word.toLowerCase());
+  chrome.storage.session.get("wordDetails", ({ wordDetails }) => {
+    console.log(wordDetails);
+    if (!wordDetails) {
+      document.body.querySelector("#definition-word").innerText = word;
+      document.body.querySelector("#definition-text").innterText =
+        `Unknown word!}`;
+      document.body.querySelector(
+        "#classification-labels-container",
+      ).innerHTML = "";
+      document.body.querySelector("#definition-link").href =
+        "https://extremismterms.adl.org/";
+      return;
+    }
 
-
-  if (!wordDetails) {
+    // Show word, definition, link, and classification chips.
     document.body.querySelector("#definition-word").innerText = word;
-    document.body.querySelector("#definition-text").innterText =
-      `Unknown word! Supported words: ${Object.keys(words).join(", ")}`;
-    document.body.querySelector("#classification-labels-container").innerHTML = "";
-    document.body.querySelector("#definition-link").href = "https://extremismterms.adl.org/";
-    return;
-  }
+    document.body.querySelector("#definition-text").innerText =
+      wordDetails.definition;
+    document.body.querySelector("#definition-link").href = wordDetails.adlLink;
 
-  // Show word, definition, link, and classification chips.
-  document.body.querySelector("#definition-word").innerText = word;
-  document.body.querySelector("#definition-text").innerText = wordDetails.definition;
-  document.body.querySelector("#definition-link").href = wordDetails.adlLink;
-
-  // Add a chip for each classification.
-  const classificationLabelsContainer = document.body.querySelector("#classification-labels-container");
-  classificationLabelsContainer.innerHTML = wordDetails.classifications
-    .map(classification => `<span class="chip" role="tag" aria-label="Classified as ${classification}">${classification}</span>`).join("");
+    // Add a chip for each classification.
+    const classificationLabelsContainer = document.body.querySelector(
+      "#classification-labels-container",
+    );
+    classificationLabelsContainer.innerHTML = wordDetails.classifications
+      .map(
+        (classification) =>
+          `<span class="chip" role="tag" aria-label="Classified as ${classification}">${classification}</span>`,
+      )
+      .join("");
+  });
 }
