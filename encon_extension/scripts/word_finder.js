@@ -55,7 +55,7 @@ function findWords(words) {
           tooltip.innerHTML = `<strong>${mark.textContent}</strong><br>${value.definition}<br>` + 
           value.classifications.map(classification => `<span class="classification">${classification}</span>`).join(" ");
           tooltip.style.position = "absolute";
-          tooltip.style.backgroundColor = "rgba(21, 66, 138, 1)";
+        tooltip.style.backgroundColor = "rgba(21, 66, 138, 1)";
           tooltip.style.color = "white";
           tooltip.style.padding = "5px 10px";
           tooltip.style.borderRadius = "5px";
@@ -107,10 +107,31 @@ function findWords(words) {
             tooltip.style.top = `${top}px`;
           });
 
-          // Hide tooltip
+            // Allow clicking on the tooltip to open the side panel - not sure why not working
+            tooltip.addEventListener("click", function () {
+              chrome.runtime.sendMessage({
+                action: "open_side_panel",
+                word: key,
+                wordDetails: value,
+              });
+            });
+
+
+          // Prevent tooltip from disappearing when hovering over it
+          tooltip.addEventListener("mouseenter", () => {
+            tooltip.style.visibility = "visible";
+            tooltip.style.opacity = "1";
+          });
+
+
+          // Hide tooltip when the mouse leaves both the word and the tooltip
           mark.addEventListener("mouseleave", () => {
-            tooltip.style.visibility = "hidden";
-            tooltip.style.opacity = "0";
+            setTimeout(() => {
+              if (!tooltip.matches(":hover") && !mark.matches(":hover")) {
+                tooltip.style.visibility = "hidden";
+                tooltip.style.opacity = "0";
+              }
+            }, 1000); // Small delay to allow hovering to the tooltip
           });
         }
       });
