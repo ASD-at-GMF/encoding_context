@@ -52,8 +52,9 @@ function findWords(words) {
           // Create the tooltip dynamically and append to body
           let tooltip = document.createElement("div");
           tooltip.classList.add("tooltiptext");
-          tooltip.innerHTML = `<strong>${mark.textContent}</strong><br>${value.definition}`;
-          tooltip.style.position = "absolute";
+          tooltip.innerHTML = `<strong>${mark.textContent}</strong><br>${value.definition}<br>` + 
+          value.classifications.map(classification => `<span class="classification">${classification}</span>`).join(" ");
+                tooltip.style.position = "absolute";
           tooltip.style.backgroundColor = "rgba(51, 51, 51, 1)";
           tooltip.style.color = "white";
           tooltip.style.padding = "5px 10px";

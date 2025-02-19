@@ -18,7 +18,7 @@ mark {
 .encon_tooltip .tooltiptext {
     visibility: hidden;
     width: 220px;
-    background-color: #333; /* Dark gray background for a modern look */
+    background-color: #15428a; /* Dark gray background for a modern look */
     color: #fff; /* White text for contrast */
     text-align: left; /* Align text to the left for better reading flow */
     padding: 10px; /* Added padding for spacing */
@@ -79,7 +79,7 @@ mark {
 
 /* Tooltip hover effect */
 .tooltiptext:hover {
-    background-color: #444; /* Slightly lighter on hover */
+    background-color: #15428a; /* Slightly lighter on hover */
 }
 
 /* Remove bottom positioning when tooltip is moved below the word */
@@ -87,4 +87,13 @@ mark {
     bottom: auto;
     top: 125%;
     transform: translateX(-50%);
+}
+
+.classification {
+    display: inline-block;
+    background-color: #ff6c6c;
+    padding: 5px 10px;
+    border-radius: 10px;
+    margin: 2px;
+    font-size: 14px;
 }
