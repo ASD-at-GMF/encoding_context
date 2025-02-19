@@ -54,8 +54,8 @@ function findWords(words) {
           tooltip.classList.add("tooltiptext");
           tooltip.innerHTML = `<strong>${mark.textContent}</strong><br>${value.definition}<br>` + 
           value.classifications.map(classification => `<span class="classification">${classification}</span>`).join(" ");
-                tooltip.style.position = "absolute";
-          tooltip.style.backgroundColor = "rgba(51, 51, 51, 1)";
+          tooltip.style.position = "absolute";
+          tooltip.style.backgroundColor = "rgba(21, 66, 138, 1)";
           tooltip.style.color = "white";
           tooltip.style.padding = "5px 10px";
           tooltip.style.borderRadius = "5px";
