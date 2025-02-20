@@ -12,11 +12,27 @@
         <div>
             <h2>Color</h2>
 
-            <input id="hightlight-color" type="color" aria-label="Highlight Color" />
+            <input
+                id="hightlight-color"
+                type="color"
+                aria-label="Highlight Color"
+            />
             <label for="hightlight-color">Highlight Color</label><br />
 
             <input id="label-color" type="color" aria-label="Label Color" />
             <label for="label-color">Label Color</label><br />
+        </div>
+        <hr />
+        <div>
+            <h2>Tags</h2>
+            <div
+                id="classification-labels-container"
+                aria-label="Classification labels"
+            ></div>
+            <label for="tag-select">Tags:</label>
+            <select name="tag-select" id="tag-select">
+                <option selected disabled hidden></option>
+            </select>
         </div>
         <hr />
         <div>
