@@ -1,140 +1,122 @@
+/* Navy blue background with white text  */
 body {
     overflow: hidden;
+    background-color: #0a1f44;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    padding: 16px;
 }
+
+/* Gold border  */
 html {
-    width: 200px;
-    border: 4px solid #15428a;
+    width: 220px;
+    border: 3px solid #ffcc00;
+    border-radius: 8px;
 }
 
 hr {
-    border: 1px dashed #15428a;
+    border: none;
+    border-top: 1px solid #ffffff;
+    margin: 12px 0;
 }
 
 h1 {
-    font-size: large;
-    color: #15428a;
+    font-size: 20px;
+    color: #ffffff;
     font-weight: bold;
-}
-
-button {
-    background-color: #327da8;
-    border-color: #15428a;
-    color: white;
-    padding: 10px;
     text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    /* font-size: 16px; */
-    margin: 4px 2px;
-    border-radius: 4px;
 }
 
-button:hover,
-button:focus {
-    background-color: #5aacdb;
+/* Gold button with navy blue text */
+button {
+    background-color: #ffcc00;
+    border: none;
+    color: #0a1f44;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    display: block;
+    width: 100%;
+    margin: 6px 0;
+    border-radius: 6px;
+    cursor: pointer;
 }
+
+/* Same gold schemes for the buttons  */
+button:hover {
+    background-color: #ffeb99;
+}
+
 button:active {
-    background-color: #15428a;
+    background-color: #d4a300;
 }
 
-/* The switch - the box around the slider */
 .switch {
     position: relative;
     display: inline-block;
-    width: 60px;
-    height: 34px;
+    width: 50px;
+    height: 28px;
 }
 
-/* Hide default HTML checkbox */
 .switch input {
     opacity: 0;
     width: 0;
     height: 0;
 }
 
-/* The slider */
+/* The slider is light grey when not toggled*/
 .slider {
     position: absolute;
     cursor: pointer;
     top: 0;
-    left: -4;
+    left: 0;
     right: 0;
-    bottom: -4;
-    background-color: #ccc;
-    -webkit-transition: 0.4s;
+    bottom: 0;
+    background-color: #d1d1d1;
     transition: 0.4s;
-    border: 2px solid #15428a;
+    border-radius: 14px;
 }
 
+/* White background  */
 .slider:before {
     position: absolute;
     content: "";
-    height: 26px;
-    width: 26px;
+    height: 20px;
+    width: 20px;
     left: 4px;
     bottom: 4px;
     background-color: white;
-    -webkit-transition: 0.4s;
     transition: 0.4s;
+    border-radius: 50%;
 }
 
+/* Gold switch when toggled */
 input:checked + .slider {
-    background-color: #327da8;
-}
-
-input:focus + .slider {
-    box-shadow: 0 0 1px #2196f3;
+    background-color: #ffcc00;
 }
 
 input:checked + .slider:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
-    transform: translateX(26px);
-}
-
-/* Rounded sliders */
-.slider {
-    border-radius: 4px;
-}
-
-.slider:before {
-    border-radius: 4px;
+    transform: translateX(22px);
 }
 
 .container {
     display: flex;
     flex-direction: column;
-    flex-wrap: nowrap;
     align-items: center;
-    /* background: wheat; */
 }
 
 .small-container {
     display: flex;
-    flex-direction: row;
-    /* flex-wrap: nowrap; */
-    /* align-items: center; */
-    /* background: blueviolet; */
-    align-content: space-between;
-    gap: 30px;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
 }
 
+/* Toggle with white*/
 .small-container > div {
-    /* background: blue; */
-    text-align: center;
-    font-size: small;
-    /* text-decoration: underline; */
+    font-size: 14px;
     font-weight: bold;
-    color: #15428a;
+    color: #ffffff;
 }
 
-/* .flex-container {
-    display: flex;
-    flex-wrap: nowrap;
-}
-
-.flex-container > button {
-    width: 50%;
-    margin: 10px;
-    text-align: center;
-} */
