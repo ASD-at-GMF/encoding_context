@@ -62,8 +62,13 @@ function findWords(words) {
           // Create the tooltip dynamically and append to body
           let tooltip = document.createElement("div");
           tooltip.classList.add("tooltiptext");
-          tooltip.innerHTML = `<strong>${mark.textContent}</strong><br>${value.definition}<br>` + 
-          value.classifications.map(classification => `<span class="classification">${classification}</span>`).join(" ");
+          tooltip.innerHTML = `
+            <strong>${mark.textContent}</strong><br>
+            ${value.definition}<br>
+            ${value.classifications.map(classification => `<span class="classification">${classification}</span>`).join(" ")}
+            <br>
+            <button class="open-sidepanel-button">Open Sidepanel</button>
+          `;
           tooltip.style.position = "absolute";
         tooltip.style.backgroundColor = "rgba(21, 66, 138, 1)";
           tooltip.style.color = "white";
@@ -72,12 +77,22 @@ function findWords(words) {
           tooltip.style.visibility = "hidden";
           tooltip.style.opacity = "0";
           tooltip.style.transition = "opacity 0.2s ease-in-out";
-          tooltip.style.pointerEvents = "none";
+          tooltip.style.pointerEvents = "auto";
           tooltip.style.whiteSpace = "normal";
           tooltip.style.maxWidth = "300px"; // Set a max width to avoid too wide tooltips
           tooltip.style.zIndex = "1000";
 
           document.body.appendChild(tooltip); // Append tooltip to body
+
+          const sidePanelButton = tooltip.querySelector('.open-sidepanel-button');
+
+          sidePanelButton.addEventListener('click', function () {
+            chrome.runtime.sendMessage({
+              action: "open_side_panel",
+              word: key,
+              wordDetails: value,
+            });
+          });
 
           // On click of word open its context in the side_panel
           mark.addEventListener("click", function () {

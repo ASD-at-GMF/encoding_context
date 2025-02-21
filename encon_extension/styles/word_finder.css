@@ -97,3 +97,18 @@ mark {
     margin: 2px;
     font-size: 14px;
 }
+
+.open-sidepanel-button {
+    background-color: #d8b500; /* A bright yellow button */
+    color: #fff;              /* Black text for contrast */
+    padding: 6px 12px;        /* Some padding to make it bigger */
+    margin-top: 5px;          /* Spacing above the button */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;          /* Match your tooltip text size */
+  }
+
+  .open-sidepanel-button:hover {
+    background-color: #c48b1a; /* Slightly darker yellow on hover */
+  }
