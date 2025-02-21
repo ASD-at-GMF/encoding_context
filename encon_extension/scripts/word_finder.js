@@ -10,17 +10,27 @@ const template = `
   </div>
 `;
 
+var classifications = [];
+
 async function getWords() {
   try {
-    // const url = "http://localhost:3000/words";
     const url = "https://context.tools/words";
-    // const url = "https://pbenzoni.pythonanywhere.com/words";
-    const response = await fetch(url);
+
+    const data = {
+      text: document.body.textContent,
+      classifications: classifications,
+    };
+    // console.log(classifications);
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", dataType: "jonp" },
+      body: JSON.stringify(data),
+    });
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
     }
     const json = await response.json();
-    console.log(json.words);
+    // console.log(json.words);
     var words = new Map(Object.entries(json.words));
     findWords(words);
   } catch (error) {
@@ -138,6 +148,10 @@ function findWords(words) {
     }
   }
 }
+
+chrome.storage.sync.get("options", function (options) {
+  classifications = options.options.classifications;
+});
 
 chrome.storage.sync.get("on", function (on) {
   main(on.on);
