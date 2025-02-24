@@ -47,7 +47,7 @@ const toggle_word_finder = () => {
           { action: "toggle_word_finder", on: on_new },
           (response) => {
             if (chrome.runtime.lastError) {
-              setTimeout(ping, 1000);
+              console.log("Tab not ready:", chrome.runtime.lastError);
             } else {
               // console.log(response);
             }

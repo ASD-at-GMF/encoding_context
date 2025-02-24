@@ -1,9 +1,40 @@
-/* Highlighted word style */
-mark {
-    background: #ffecb3; /* Softer yellow background for highlighting */
-    color: #000; /* Black text for better contrast */
+/* Define CSS variables for colors */
+:root {
+    --highlight-color: #ffecb3;
+    --highlight-text-color: #000000;
+    --highlight-opacity: 1;
+}
+
+/* Add media query for dark mode */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --highlight-opacity: 0.8;
+        --highlight-text-color: #ffffff;
+    }
+}
+
+mark.encon-highlight {
+    background-color: var(--highlight-color) !important;
+    color: var(--highlight-text-color) !important;
+    opacity: var(--highlight-opacity);
     padding: 2px 4px;
-    border-radius: 4px; /* Rounded corners for a smoother look */
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Add specific styles for different highlight combinations */
+mark.encon-highlight.highlight {
+    background-color: var(--highlight-color) !important;
+}
+
+mark.encon-highlight.underline {
+    text-decoration: underline !important;
+    text-decoration-thickness: 2px;
+    text-decoration-color: var(--highlight-color);
+}
+
+mark.encon-highlight.italicize {
+    font-style: italic !important;
 }
 
 /* Tooltip container */
@@ -96,6 +127,8 @@ mark {
     border-radius: 10px;
     margin: 2px;
     font-size: 14px;
+    color: #ffffff;
+    opacity: var(--highlight-opacity);
 }
 
 .open-sidepanel-button {

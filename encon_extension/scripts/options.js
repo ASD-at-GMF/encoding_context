@@ -2,9 +2,28 @@
 const options = {};
 var tags = [];
 
+// Function to update highlight colors in active tabs
+async function updateHighlightColorsInTabs(color) {
+  try {
+    const tabs = await chrome.tabs.query({});
+    for (const tab of tabs) {
+      chrome.tabs.sendMessage(tab.id, {
+        action: "update_highlight_color",
+        color: color
+      }).catch(() => {
+        // Ignore errors for tabs where content script isn't loaded
+      });
+    }
+  } catch (error) {
+    console.error("Error updating tabs:", error);
+  }
+}
+
 // Saves options to chrome.storage
 const saveOptions = () => {
+  // Update the options cache
   options.hightlight_color = document.getElementById("hightlight-color").value;
+  const previousHighlightColor = options.hightlight_color;
   options.label_color = document.getElementById("label-color").value;
 
   const highlight_style = [];
@@ -22,6 +41,11 @@ const saveOptions = () => {
     setTimeout(() => {
       status.textContent = "";
     }, 750);
+
+    // If highlight color changed, update it in all tabs
+    if (options.hightlight_color !== previousHighlightColor) {
+      updateHighlightColorsInTabs(options.hightlight_color);
+    }
   });
 };
 
@@ -29,8 +53,7 @@ async function restoreOptions() {
   const data = await chrome.storage.sync.get("options");
   Object.assign(options, data.options);
   if (options.hightlight_color)
-    document.getElementById("hightlight-color").value =
-      options.hightlight_color;
+    document.getElementById("hightlight-color").value = options.hightlight_color;
   if (options.label_color)
     document.getElementById("label-color").value = options.label_color;
   if (options.highlight_style) {
@@ -48,12 +71,12 @@ async function restoreOptions() {
 
 function makeChips() {
   const classificationLabelsContainer = document.body.querySelector(
-    "#classification-labels-container",
+    "#classification-labels-container"
   );
   classificationLabelsContainer.innerHTML = tags
     .map(
       (classification) =>
-        `<button class="chip" role="tag" aria-label="Classified as ${classification}">${classification}</button>`,
+        `<button class="chip" role="tag" aria-label="Classified as ${classification}">${classification}</button>`
     )
     .join("");
 
@@ -88,6 +111,13 @@ async function fillTagSelect(selectedTags) {
     console.error("Error: " + error.message);
   }
 }
+
+// Set up color input event listeners
+document.getElementById("hightlight-color").addEventListener("input", (event) => {
+  const newColor = event.target.value;
+  updateHighlightColorsInTabs(newColor);
+});
+
 
 tagSelect = document.getElementById("tag-select");
 tagSelect.onchange = function () {
