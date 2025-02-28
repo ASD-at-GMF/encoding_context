@@ -5,21 +5,25 @@
     --highlight-opacity: 1;
 }
 
-/* Add media query for dark mode */
 @media (prefers-color-scheme: dark) {
     :root {
         --highlight-opacity: 0.8;
-        --highlight-text-color: #ffffff;
+        --highlight-text-color: #000000;
     }
 }
 
+/* Highlight styles */
 mark.encon-highlight {
-    background-color: var(--highlight-color) !important;
-    color: var(--highlight-text-color) !important;
-    opacity: var(--highlight-opacity);
+    background-color: var(--highlight-color, #ffecb3) !important;
+    color: var(--highlight-text-color, #000000) !important;
+    opacity: var(--highlight-opacity, 1);
     padding: 2px 4px;
     border-radius: 4px;
     transition: background-color 0.3s ease, color 0.3s ease;
+    
+    /* Fallback highlights*/
+    background-color: #ffecb3 !important;   
+    color: #000000 !important;
 }
 
 /* Add specific styles for different highlight combinations */

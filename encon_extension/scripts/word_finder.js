@@ -61,13 +61,19 @@ function clearWords() {
 }
 
 function findWords(words) {
-  chrome.storage.sync.get("options", function(data) {
-    const highlightStyles = data.options?.highlight_style || [];
-    
-    var instance = new Mark(document);
-    instance.mark([...words.keys()], {
-      className: `encon-highlight ${highlightStyles.join(' ')}`
-    });
+    chrome.storage.sync.get("options", function(data) {
+      const highlightStyles = data.options?.highlight_style || [];
+      const highlightColor = data.options?.hightlight_color || "#ffecb3";
+      
+      var instance = new Mark(document);
+      instance.mark([...words.keys()], {
+        className: `encon-highlight ${highlightStyles.join(' ')}`,
+        each: function(element) {
+
+          element.style.backgroundColor = highlightColor;
+          element.style.color = "#000000";
+        }
+      });
 
     let marks = document.querySelectorAll("mark.encon-highlight");
 
@@ -219,7 +225,6 @@ function calculateBrightness(r, g, b) {
   return Math.round((r * 299 + g * 587 + b * 114) / 1000);
 }
 
-// Function to update CSS variables based on color scheme
 function updateHighlightColors(highlightColor) {
   // Get the current color scheme
   const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -230,22 +235,58 @@ function updateHighlightColors(highlightColor) {
   // Create CSS variable style
   document.documentElement.style.setProperty('--highlight-color', highlightColor);
   
-  // Adjust text color based on highlight color brightness and color scheme
+  // Adjust text color based on highlight color brightness
   const brightness = calculateBrightness(rgb.r, rgb.g, rgb.b);
-  const textColor = isDarkMode 
-    ? (brightness > 128 ? '#000000' : '#ffffff')
-    : (brightness > 128 ? '#000000' : '#ffffff');
+  const textColor = brightness > 128 ? '#000000' : '#ffffff';
   
   document.documentElement.style.setProperty('--highlight-text-color', textColor);
+  
+  // Create or update a stylesheet with the new colors
+  let style = document.getElementById('encon-dynamic-style');
+  if (!style) {
+    style = document.createElement('style');
+    style.id = 'encon-dynamic-style';
+    document.head.appendChild(style);
+  }
+  
+  style.textContent = `
+    mark.encon-highlight {
+      background-color: ${highlightColor} !important;
+      color: ${textColor} !important;
+    }
+  `;
 }
 
-// Message listener for updates
+// Function to refresh highlights with current CSS variables
+function refreshHighlights() {
+  document.body.classList.add('refresh-highlights');
+  setTimeout(() => {
+    document.body.classList.remove('refresh-highlights');
+  }, 10);
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "toggle_word_finder") {
     main(message.on);
     sendResponse("Toggled Word Finder");
   } else if (message.action === "update_highlight_color") {
+    // Update the CSS variables
     updateHighlightColors(message.color);
+    
+    // Force refresh of all marks with the new color
+    const marks = document.querySelectorAll("mark.encon-highlight");
+    marks.forEach(mark => {
+      // Apply inline style directly to ensure update
+      mark.style.backgroundColor = message.color;
+      
+      // Calculate contrast color for text
+      const rgb = hexToRgb(message.color);
+      const brightness = calculateBrightness(rgb.r, rgb.g, rgb.b);
+      const textColor = brightness > 128 ? '#000000' : '#ffffff';
+      
+      mark.style.color = textColor;
+    });
+    
     sendResponse("Updated highlight color");
   }
 });

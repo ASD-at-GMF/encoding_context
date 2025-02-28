@@ -9,7 +9,8 @@ async function updateHighlightColorsInTabs(color) {
     for (const tab of tabs) {
       chrome.tabs.sendMessage(tab.id, {
         action: "update_highlight_color",
-        color: color
+        color: color,
+        timestamp: Date.now() // Add timestamp to ensure message is treated as new
       }).catch(() => {
         // Ignore errors for tabs where content script isn't loaded
       });
@@ -111,13 +112,6 @@ async function fillTagSelect(selectedTags) {
     console.error("Error: " + error.message);
   }
 }
-
-// Set up color input event listeners
-document.getElementById("hightlight-color").addEventListener("input", (event) => {
-  const newColor = event.target.value;
-  updateHighlightColorsInTabs(newColor);
-});
-
 
 tagSelect = document.getElementById("tag-select");
 tagSelect.onchange = function () {
