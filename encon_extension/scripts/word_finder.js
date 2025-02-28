@@ -220,9 +220,19 @@ function hexToRgb(hex) {
   } : null;
 }
 
-// Helper function to calculate color brightness
+// Helper function to calculate color bsrightness
 function calculateBrightness(r, g, b) {
   return Math.round((r * 299 + g * 587 + b * 114) / 1000);
+}
+
+// Add this function to word_finder.js
+function getContrastTextColor(hexColor) {
+  const hex = hexColor.replace('#', '');
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness > 128 ? '#000000' : '#ffffff';
 }
 
 function updateHighlightColors(highlightColor) {
@@ -257,6 +267,45 @@ function updateHighlightColors(highlightColor) {
   `;
 }
 
+function updateLabelColors(labelColor) {
+  console.log("Updating label colors to:", labelColor);
+  
+  // Set CSS variable for future elements
+  document.documentElement.style.setProperty('--label-color', labelColor);
+  
+  // Use your existing functions to calculate text color
+  const rgb = hexToRgb(labelColor);
+  const brightness = calculateBrightness(rgb.r, rgb.g, rgb.b);
+  const textColor = brightness > 128 ? '#000000' : '#ffffff';
+  
+  // Set text color variable
+  document.documentElement.style.setProperty('--label-text-color', textColor);
+  
+  // Create or update a stylesheet with the new colors
+  let style = document.getElementById('encon-dynamic-labels-style');
+  if (!style) {
+    style = document.createElement('style');
+    style.id = 'encon-dynamic-labels-style';
+    document.head.appendChild(style);
+  }
+  
+  style.textContent = `
+    .classification, span.chip {
+      background-color: ${labelColor} !important;
+      color: ${textColor} !important;
+    }
+  `;
+  
+  // Update existing classification spans
+  const classificationSpans = document.querySelectorAll('.classification, span.chip');
+  console.log(`Updating ${classificationSpans.length} classification spans`);
+  
+  classificationSpans.forEach(span => {
+    span.style.backgroundColor = labelColor;
+    span.style.color = textColor;
+  });
+}
+
 // Function to refresh highlights with current CSS variables
 function refreshHighlights() {
   document.body.classList.add('refresh-highlights');
@@ -289,6 +338,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     
     sendResponse("Updated highlight color");
   }
+  else if (message.action === "update_label_color") {
+    console.log("Received request to update label color to:", message.color);
+    // Update the label color in classifications
+    updateLabelColors(message.color);
+    sendResponse("Updated label color");
+    return true; // Important: indicates you'll send a response asynchronously
+  }
 });
 
 // Initialize color scheme listener
@@ -304,5 +360,21 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () 
 chrome.storage.onChanged.addListener((changes, namespace) => {
   if (namespace === 'sync' && changes.options?.newValue?.hightlight_color) {
     updateHighlightColors(changes.options.newValue.hightlight_color);
+  }
+});
+
+chrome.storage.sync.get("options", function (data) {
+  console.log("Loaded options:", data.options);
+  if (data.options) {
+    classifications = data.options.classifications || [];
+    
+    if (data.options.hightlight_color) {
+      updateHighlightColors(data.options.hightlight_color);
+    }
+    
+    if (data.options.label_color) {
+      console.log("Initializing label color to:", data.options.label_color);
+      updateLabelColors(data.options.label_color);
+    }
   }
 });

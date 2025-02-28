@@ -22,9 +22,12 @@ async function updateHighlightColorsInTabs(color) {
 
 // Saves options to chrome.storage
 const saveOptions = () => {
+  // Store the previous value for comparison
+  const previousHighlightColor = options.hightlight_color;
+  const previousLabelColor = options.label_color;
+  
   // Update the options cache
   options.hightlight_color = document.getElementById("hightlight-color").value;
-  const previousHighlightColor = options.hightlight_color;
   options.label_color = document.getElementById("label-color").value;
 
   const highlight_style = [];
@@ -35,20 +38,69 @@ const saveOptions = () => {
 
   options.classifications = tags;
 
+  // Update status to let user know we're saving
+  const status = document.getElementById("status");
+  status.textContent = "Saving options...";
+  status.className = "saving";
+
   chrome.storage.sync.set({ options }, () => {
+    // Check for any errors
+    if (chrome.runtime.lastError) {
+      console.error("Error saving options:", chrome.runtime.lastError);
+      status.textContent = "Error saving options.";
+      setTimeout(() => {
+        status.textContent = "";
+        status.className = "";
+      }, 1500);
+      return;
+    }
+
     // Update status to let user know options were saved.
-    const status = document.getElementById("status");
-    status.textContent = "Options saved.";
+    status.textContent = "Options saved!";
+    status.className = "";
     setTimeout(() => {
       status.textContent = "";
-    }, 750);
+    }, 1500);
+
+    console.log("Saved options:", options);
 
     // If highlight color changed, update it in all tabs
     if (options.hightlight_color !== previousHighlightColor) {
       updateHighlightColorsInTabs(options.hightlight_color);
     }
+    
+    // If label color changed, update it in all tabs
+    if (options.label_color !== previousLabelColor) {
+      updateLabelColorsInTabs(options.label_color);
+    }
   });
 };
+
+async function updateLabelColorsInTabs(color) {
+  console.log("Updating label colors in tabs to:", color);
+  try {
+    const tabs = await chrome.tabs.query({});
+    let successCount = 0;
+    
+    for (const tab of tabs) {
+      try {
+        await chrome.tabs.sendMessage(tab.id, {
+          action: "update_label_color",
+          color: color,
+          timestamp: Date.now() // Add timestamp to ensure message is treated as new
+        });
+        successCount++;
+      } catch (error) {
+        // Ignore errors for tabs where content script isn't loaded
+        console.log(`Couldn't update tab ${tab.id}: ${error.message || "Unknown error"}`);
+      }
+    }
+    
+    console.log(`Updated label colors in ${successCount} out of ${tabs.length} tabs`);
+  } catch (error) {
+    console.error("Error updating label colors in tabs:", error);
+  }
+}
 
 async function restoreOptions() {
   const data = await chrome.storage.sync.get("options");

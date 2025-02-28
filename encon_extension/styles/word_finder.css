@@ -3,6 +3,8 @@
     --highlight-color: #ffecb3;
     --highlight-text-color: #000000;
     --highlight-opacity: 1;
+    --label-color: #ff6c6c;
+    --label-text-color: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -126,12 +128,12 @@ mark.encon-highlight.italicize {
 
 .classification {
     display: inline-block;
-    background-color: #ff6c6c;
+    background-color: var(--label-color, #ff6c6c);
+    color: var(--label-text-color, #ffffff);
     padding: 5px 10px;
     border-radius: 10px;
     margin: 2px;
     font-size: 14px;
-    color: #ffffff;
     opacity: var(--highlight-opacity);
 }
 
