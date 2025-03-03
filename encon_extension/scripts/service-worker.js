@@ -1,7 +1,7 @@
-// Turn word finder on
+// Turn word finder on by default
 chrome.storage.sync.set({ on: true });
 
-// to find the windowId of the active tab
+// Get the active window
 let windowId;
 chrome.tabs.onActivated.addListener(function (activeInfo) {
   windowId = activeInfo.windowId;
@@ -15,13 +15,14 @@ chrome.runtime.onMessage.addListener((message, sender) => {
       chrome.storage.session.set({ lastWord: message.word });
       chrome.storage.session.set({ wordDetails: message.wordDetails });
       console.log(message.wordDetails);
-    } else if (message.action === "toggle_word_finder") {
+    } 
+    else if (message.action === "toggle_word_finder") {
       toggle_word_finder();
     }
   })();
 });
 
-// Listen for commands
+// Listen for keyboard shortcuts
 chrome.commands.onCommand.addListener((command) => {
   if (command === "toggle") {
     // Send toggle to popup
@@ -35,14 +36,14 @@ chrome.commands.onCommand.addListener((command) => {
 });
 
 const toggle_word_finder = () => {
-  chrome.storage.sync.get("on", function (on) {
+  chrome.storage.sync.get("on", function (on) { // Get the current state of the word finder
     // console.log(on.on);
     var on_new = !on.on;
-    chrome.storage.sync.set({ on: on_new });
+    chrome.storage.sync.set({ on: on_new }); // Save the new state of the word finder
 
     try {
-      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        chrome.tabs.sendMessage(
+      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) { // Query the active tab
+        chrome.tabs.sendMessage( // Send a message to the content script
           tabs[0].id,
           { action: "toggle_word_finder", on: on_new },
           (response) => {
@@ -57,12 +58,5 @@ const toggle_word_finder = () => {
     } catch {
       console.log("No Tab");
     }
-    // chrome.tabs.query({ active: true }, function (tabs) {
-    //   chrome.tabs.sendMessage(
-    //     tabs[0].id,
-    //     { action: "toggle_word_finder", on: on },
-    //     // function (response) {},
-    //   );
-    // });
   });
 };

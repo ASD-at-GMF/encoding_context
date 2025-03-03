@@ -5,9 +5,11 @@ var tags = [];
 // Function to update highlight colors in active tabs
 async function updateHighlightColorsInTabs(color) {
   try {
-    const tabs = await chrome.tabs.query({});
+    const tabs = await chrome.tabs.query({}); //Query all tabs
+    
+    //Send message to content script in each tab
     for (const tab of tabs) {
-      chrome.tabs.sendMessage(tab.id, {
+      chrome.tabs.sendMessage(tab.id, {   
         action: "update_highlight_color",
         color: color,
         timestamp: Date.now() // Add timestamp to ensure message is treated as new
@@ -20,16 +22,40 @@ async function updateHighlightColorsInTabs(color) {
   }
 }
 
+async function updateLabelColorsInTabs(color) {
+  try {
+    const tabs = await chrome.tabs.query({}); // Query all tabs
+    
+    for (const tab of tabs) {
+      try {
+        await chrome.tabs.sendMessage(tab.id, {
+          action: "update_label_color",
+          color: color,
+          timestamp: Date.now() // Add timestamp to ensure message is treated as new
+        });
+        successCount++;
+      } catch (error) {
+        // Ignore errors for tabs where content script isn't loaded
+      }
+    }
+  
+  } catch (error) {
+    console.error("Error updating tabs:", error);
+  }
+}
+
 // Saves options to chrome.storage
 const saveOptions = () => {
-  // Store the previous value for comparison
+  // Store previous color values
   const previousHighlightColor = options.hightlight_color;
   const previousLabelColor = options.label_color;
   
-  // Update the options cache
+  // Update the options cache with new values
   options.hightlight_color = document.getElementById("hightlight-color").value;
   options.label_color = document.getElementById("label-color").value;
 
+
+  // Get the selected highlight styles (underline, italic)
   const highlight_style = [];
   document.querySelectorAll(".highlight-style").forEach((checkbox) => {
     if (checkbox.checked == true) highlight_style.push(checkbox.value);
@@ -76,35 +102,11 @@ const saveOptions = () => {
   });
 };
 
-async function updateLabelColorsInTabs(color) {
-  console.log("Updating label colors in tabs to:", color);
-  try {
-    const tabs = await chrome.tabs.query({});
-    let successCount = 0;
-    
-    for (const tab of tabs) {
-      try {
-        await chrome.tabs.sendMessage(tab.id, {
-          action: "update_label_color",
-          color: color,
-          timestamp: Date.now() // Add timestamp to ensure message is treated as new
-        });
-        successCount++;
-      } catch (error) {
-        // Ignore errors for tabs where content script isn't loaded
-        console.log(`Couldn't update tab ${tab.id}: ${error.message || "Unknown error"}`);
-      }
-    }
-    
-    console.log(`Updated label colors in ${successCount} out of ${tabs.length} tabs`);
-  } catch (error) {
-    console.error("Error updating label colors in tabs:", error);
-  }
-}
 
 async function restoreOptions() {
   const data = await chrome.storage.sync.get("options");
-  Object.assign(options, data.options);
+  Object.assign(options, data.options); // Merge data into options cache
+  // Set the options form fields based on the cached options
   if (options.hightlight_color)
     document.getElementById("hightlight-color").value = options.hightlight_color;
   if (options.label_color)
@@ -139,6 +141,21 @@ function makeChips() {
   });
 }
 
+//When a chip is clicked, remove it from list of tags, but add it back to the selectable tags list
+function chipRemove(newTag) {
+  newTag.addEventListener("click", function () {
+    var opt = document.createElement("option"); 
+    opt.value = newTag.innerHTML;
+    opt.innerHTML = newTag.innerHTML;
+    tagSelect.appendChild(opt); //
+    newTag.remove();
+    const index = tags.indexOf(newTag.innerHTML);
+    if (index > -1) {
+      tags.splice(index, 1);
+    }
+  });
+}
+
 async function fillTagSelect(selectedTags) {
   try {
     // const url = "http://localhost:3000/status";
@@ -151,8 +168,8 @@ async function fillTagSelect(selectedTags) {
     const json = await response.json();
     console.log(json);
     tagSelect = document.getElementById("tag-select");
-    json.tags.forEach((tag) => {
-      if (!selectedTags || !selectedTags.includes(tag)) {
+    json.tags.forEach((tag) => { //Loop through all tags in the json response
+      if (!selectedTags || !selectedTags.includes(tag)) { //If the tag is not already selected, add it to the selectable tags list
         console.log(tag);
         var opt = document.createElement("option");
         opt.value = tag;
@@ -166,34 +183,21 @@ async function fillTagSelect(selectedTags) {
 }
 
 tagSelect = document.getElementById("tag-select");
-tagSelect.onchange = function () {
+tagSelect.onchange = function () { //Event handler for when a tag is selected
   tags.push(tagSelect.value);
-  makeChips();
-  removeValue = tagSelect.value;
+  makeChips(); //Make a chip for the selected tag
+  removeValue = tagSelect.value; //Remove the selected tag from the selectable tags list
   tagSelect.value = "";
   for (var i = 0; i < tagSelect.length; i++) {
     if (tagSelect.options[i].value == removeValue) tagSelect.remove(i);
   }
 };
 
-function chipRemove(newTag) {
-  newTag.addEventListener("click", function () {
-    var opt = document.createElement("option");
-    opt.value = newTag.innerHTML;
-    opt.innerHTML = newTag.innerHTML;
-    tagSelect.appendChild(opt);
-    newTag.remove();
-    const index = tags.indexOf(newTag.innerHTML);
-    if (index > -1) {
-      tags.splice(index, 1);
-    }
-  });
-}
 
-document.addEventListener("DOMContentLoaded", restoreOptions);
-document.getElementById("save").addEventListener("click", saveOptions);
+document.addEventListener("DOMContentLoaded", restoreOptions); //Restore options when the page is loaded
+document.getElementById("save").addEventListener("click", saveOptions); //Save options when the save button is clicked
 
-async function getStatus() {
+async function getStatus() { //Check if the server is running
   try {
     // const url = "http://localhost:3000/status";
     // const url = "https://pbenzoni.pythonanywhere.com/status";

@@ -18,7 +18,7 @@ async function getWords() {
       classifications: classifications,
     };
 
-    const response = await fetch(url, {
+    const response = await fetch(url, { // Fetch the words from the API
       method: "POST",
       headers: { "Content-Type": "application/json", dataType: "jsonp" },
       body: JSON.stringify(data),
@@ -43,34 +43,35 @@ async function getWords() {
       return;
     }
 
-    var words = new Map(Object.entries(json.words));
-    findWords(words);
+    var words = new Map(Object.entries(json.words)); // Convert words to a Map
+    findWords(words); // Call findWords on each word in the Map
   } catch (error) {
     console.error("Error fetching words:", error.message);
   }
 }
 
+// Clear all words from the page
 function clearWords() {
   var instance = new Mark(document);
-  instance.unmark();
-
+  instance.unmark(); // Remove all highlights from the page
+ 
   var tooltips = document.getElementsByClassName("tooltiptext");
   while (tooltips[0]) {
-    tooltips[0].parentNode.removeChild(tooltips[0]);
+    tooltips[0].parentNode.removeChild(tooltips[0]); // Remove all tooltips
   }
 }
 
 function findWords(words) {
-    chrome.storage.sync.get("options", function(data) {
+    chrome.storage.sync.get("options", function(data) { // Get the options from storage
       const highlightStyles = data.options?.highlight_style || [];
       const highlightColor = data.options?.hightlight_color || "#ffecb3";
       
-      var instance = new Mark(document);
-      instance.mark([...words.keys()], {
+      var instance = new Mark(document); 
+      instance.mark([...words.keys()], { // Mark each word in the words Map
         className: `encon-highlight ${highlightStyles.join(' ')}`,
         each: function(element) {
 
-          element.style.backgroundColor = highlightColor;
+          element.style.backgroundColor = highlightColor; // Set the background color of the element
           element.style.color = "#000000";
         }
       });
@@ -80,10 +81,10 @@ function findWords(words) {
     // Store a reference to each tooltip by word
     let tooltipMap = new Map();
 
-    marks.forEach((mark) => {
+    marks.forEach((mark) => { // For each mark, create a tooltip
       let word = mark.textContent.trim();
 
-      if (!tooltipMap.has(word)) {
+      if (!tooltipMap.has(word)) { // If the tooltip doesn't exist, create it
         let tooltip = document.createElement("div");
         tooltip.classList.add("tooltiptext");
         tooltip.innerHTML = `
@@ -124,7 +125,7 @@ function findWords(words) {
       let tooltip = tooltipMap.get(word);
       let hideTimer;
 
-      const showTooltip = () => {
+      const showTooltip = () => { // Show the tooltip
         tooltip.style.visibility = "visible";
         tooltip.style.opacity = "1";
 
@@ -192,17 +193,18 @@ function findWords(words) {
 // Initialize settings
 chrome.storage.sync.get("options", function (options) {
   classifications = options.options.classifications;
-  if (options.options.hightlight_color) {
+  if (options.options.hightlight_color) { // If the highlight color is set, update the colors
     updateHighlightColors(options.options.hightlight_color);
   }
 });
 
-chrome.storage.sync.get("on", function (on) {
+chrome.storage.sync.get("on", function (on) { // Get the current state of the word finder
   main(on.on);
 });
 
-function main(on) {
-  if (on === true) {
+// Main function to toggle the word finder
+function main(on) {  
+  if (on === true) { 
     getWords();
   } else {
     clearWords();
@@ -212,7 +214,7 @@ function main(on) {
 
 // Helper function to convert hex to RGB
 function hexToRgb(hex) {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); // regex to match hex color
   return result ? {
     r: parseInt(result[1], 16),
     g: parseInt(result[2], 16),
@@ -220,35 +222,21 @@ function hexToRgb(hex) {
   } : null;
 }
 
-// Helper function to calculate color bsrightness
+// Helper function to calculate color brightness
 function calculateBrightness(r, g, b) {
   return Math.round((r * 299 + g * 587 + b * 114) / 1000);
 }
 
-// Add this function to word_finder.js
-function getContrastTextColor(hexColor) {
-  const hex = hexColor.replace('#', '');
-  const r = parseInt(hex.substr(0, 2), 16);
-  const g = parseInt(hex.substr(2, 2), 16);
-  const b = parseInt(hex.substr(4, 2), 16);
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-  return brightness > 128 ? '#000000' : '#ffffff';
-}
 
+// Updates the highlight color on the page
 function updateHighlightColors(highlightColor) {
-  // Get the current color scheme
-  const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;  // Get the current color scheme
   
-  // Convert highlight color to RGB for opacity calculations
-  const rgb = hexToRgb(highlightColor);
-  
-  // Create CSS variable style
-  document.documentElement.style.setProperty('--highlight-color', highlightColor);
-  
-  // Adjust text color based on highlight color brightness
-  const brightness = calculateBrightness(rgb.r, rgb.g, rgb.b);
+  const rgb = hexToRgb(highlightColor); // Convert highlight color to RGB for opacity calculations
+  const brightness = calculateBrightness(rgb.r, rgb.g, rgb.b); // Adjust text color based on highlight color brightness
   const textColor = brightness > 128 ? '#000000' : '#ffffff';
-  
+
+  document.documentElement.style.setProperty('--highlight-color', highlightColor); // Create CSS variable style 
   document.documentElement.style.setProperty('--highlight-text-color', textColor);
   
   // Create or update a stylesheet with the new colors
@@ -267,16 +255,16 @@ function updateHighlightColors(highlightColor) {
   `;
 }
 
+
+// Updates the label color on the page
 function updateLabelColors(labelColor) {
-  console.log("Updating label colors to:", labelColor);
-  
-  // Set CSS variable for future elements
-  document.documentElement.style.setProperty('--label-color', labelColor);
-  
-  // Use your existing functions to calculate text color
+
+  // Calculate contrast text color  
   const rgb = hexToRgb(labelColor);
   const brightness = calculateBrightness(rgb.r, rgb.g, rgb.b);
   const textColor = brightness > 128 ? '#000000' : '#ffffff';
+
+  document.documentElement.style.setProperty('--label-color', labelColor);  // Set CSS variable for future elements
   
   // Set text color variable
   document.documentElement.style.setProperty('--label-text-color', textColor);
@@ -306,13 +294,6 @@ function updateLabelColors(labelColor) {
   });
 }
 
-// Function to refresh highlights with current CSS variables
-function refreshHighlights() {
-  document.body.classList.add('refresh-highlights');
-  setTimeout(() => {
-    document.body.classList.remove('refresh-highlights');
-  }, 10);
-}
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "toggle_word_finder") {
