@@ -1,3 +1,8 @@
+:root {
+    --label-color: #ff6c6c;
+    --label-text-color: #ffffff;
+}
+
 /* Navy blue background with white text  */
 body {
     overflow: hidden;

@@ -1,3 +1,8 @@
+:root {
+    --label-color: #ff6c6c;
+    --label-text-color: #ffffff;
+}
+
 p {
     font-size: 16px;
 }
@@ -61,8 +66,8 @@ hr {
 
 /* Red background with white text*/
 .chip {
-    background-color: #ff6c6c;
-    color: #ffffff;
+    background-color: var(--label-color, #ff6c6c);
+    color: var(--label-text-color, #ffffff);
     display: inline-block;
     padding: 6px 14px;
     margin: 4px;
