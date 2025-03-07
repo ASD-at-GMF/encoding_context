@@ -91,7 +91,7 @@ function findWords(words) {
   let tooltipMap = new Map();
 
   marks.forEach((mark) => { // For each mark, create a tooltip
-    let word = mark.textContent.trim();
+    let word = mark.textContent.trim().toLowerCase();
 
     if (!tooltipMap.has(word)) { // If the tooltip doesn't exist, create it
       let tooltip = document.createElement("div");
