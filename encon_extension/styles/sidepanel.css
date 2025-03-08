@@ -91,3 +91,10 @@ hr {
     color: #ffeb99;
     text-decoration: underline;
 }
+#footer-image {
+    display: block;
+    margin: 20px auto;
+    max-width: 80%;
+    height: auto;
+}
+
