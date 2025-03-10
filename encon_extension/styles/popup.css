@@ -1,122 +1,108 @@
-/* Navy blue background with white text  */
-body {
-    overflow: hidden;
-    background-color: #0a1f44;
-    color: #ffffff;
-    font-family: Arial, sans-serif;
-    padding: 16px;
+/* Reset and box sizing */
+* {
+  box-sizing: border-box;
 }
 
-/* Gold border  */
-html {
-    width: 220px;
-    border: 3px solid #ffcc00;
-    border-radius: 8px;
+body {
+  background: linear-gradient(135deg, #0a1f44, #1e2a6d);
+  color: #ffffff;
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  padding: 16px;
+}
+
+.popup-container {
+  width: 260px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border: 3px solid #ffcc00;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+header h1 {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 10px;
 }
 
 hr {
-    border: none;
-    border-top: 1px solid #ffffff;
-    margin: 12px 0;
+  border: none;
+  border-top: 1px solid #ffffff;
+  margin: 16px 0;
 }
 
-h1 {
-    font-size: 20px;
-    color: #ffffff;
-    font-weight: bold;
-    text-align: center;
+.toggle-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* Gold button with navy blue text */
-button {
-    background-color: #ffcc00;
-    border: none;
-    color: #0a1f44;
-    padding: 10px 16px;
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-    display: block;
-    width: 100%;
-    margin: 6px 0;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-/* Same gold schemes for the buttons  */
-button:hover {
-    background-color: #ffeb99;
-}
-
-button:active {
-    background-color: #d4a300;
+.toggle-label span {
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .switch {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 28px;
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
 }
 
 .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
-/* The slider is light grey when not toggled*/
 .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #d1d1d1;
-    transition: 0.4s;
-    border-radius: 14px;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #d1d1d1;
+  transition: 0.4s;
+  border-radius: 14px;
 }
 
-/* White background  */
 .slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: 0.4s;
-    border-radius: 50%;
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
 }
 
-/* Gold switch when toggled */
 input:checked + .slider {
-    background-color: #ffcc00;
+  background-color: #ffcc00;
 }
 
 input:checked + .slider:before {
-    transform: translateX(22px);
+  transform: translateX(22px);
 }
 
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.button-section button {
+  background-color: #ffcc00;
+  border: none;
+  color: #0a1f44;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
 }
 
-.small-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 10px 0;
+.button-section button:hover {
+  background-color: #ffdb4d;
 }
-
-/* Toggle with white*/
-.small-container > div {
-    font-size: 14px;
-    font-weight: bold;
-    color: #ffffff;
-}
-

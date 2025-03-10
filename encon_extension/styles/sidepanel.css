@@ -1,88 +1,86 @@
-p {
-    font-size: 16px;
+/* Reset and box sizing */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, #0a1f44, #1e2a6d);
+  color: #ffffff;
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  padding: 14px;
+}
+
+.sidepanel-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+header h1 {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #ffffff;
+  margin: 16px 0;
 }
 
 main {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 12px;
+  padding: 16px;
+  background-color: rgba(30, 53, 87, 0.8);
+  border-radius: 8px;
 }
 
-/* Lighter blue for inside box */
-main > div {
-    background-color: #1e3557;
-    padding: 16px;
-    padding-right: 24px;
-    border-radius: 8px;
-    margin-bottom: 16px;
+.definition-card {
+  background: #1e3557;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 16px;
 }
 
-/* sidebar  */
-/* navy blue with white text */
-body {
-    background-color: #0a1f44; 
-    color: #ffffff;
-    font-family: Arial, sans-serif;
-    padding: 14px;
-    width: 100%;
-    height: 100vh;
-}
-
-h1 {
-    color: #ffffff;
-    font-size: 24px;
-    margin-bottom: 8px;
-    font-weight: bold;
-    text-align: center;
-}
-
-/* Horizontal line for under the title */
-hr {
-    border: none;
-    border-top: 1px solid #ffffff;
-    margin: 16px 0;
-}
-
-/* Gold text */
 #definition-word {
-    color: #ffcc00; 
-    font-size: 22px;
-    margin-top: 16px;
-    margin-bottom: 8px;
-    font-weight: bold;
+  color: #ffcc00;
+  font-size: 24px;
+  margin: 10px 0;
+  font-weight: 700;
 }
 
-/* Grey texts*/
 #definition-text {
-    color: #d1d1d1;
-    line-height: 1.5;
-    font-size: 16px;
+  color: #d1d1d1;
+  font-size: 16px;
+  line-height: 1.6;
 }
 
-/* Red background with white text*/
-.chip {
-    background-color: #ff6c6c;
-    color: #ffffff;
-    display: inline-block;
-    padding: 6px 14px;
-    margin: 4px;
-    border-radius: 16px;
-    font-size: 14px;
+.learn-more {
+  margin-top: 12px;
+  font-size: 16px;
 }
 
-#categories-container {
-    margin-top: 12px;
-}
-
-/* Gold color */
 #definition-link {
-    color: #ffcc00;
-    text-decoration: none;
-    font-weight: bold;
+  color: #ffcc00;
+  text-decoration: none;
+  font-weight: 500;
 }
 
-/* beige/gold color */
 #definition-link:hover {
-    color: #ffeb99;
-    text-decoration: underline;
+  color: #ffdb4d;
+  text-decoration: underline;
+}
+
+.chip {
+  background-color: #ff6c6c;
+  color: #ffffff;
+  display: inline-block;
+  padding: 6px 14px;
+  margin: 4px;
+  border-radius: 16px;
+  font-size: 14px;
 }
