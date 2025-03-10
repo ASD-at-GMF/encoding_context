@@ -29,8 +29,12 @@ mark.encon-highlight {
 }
 
 /* Add specific styles for different highlight combinations */
-mark.encon-highlight.highlight {
+/* mark.encon-highlight.highlight {
     background-color: var(--highlight-color) !important;
+} */
+
+mark.encon-highlight.bold {
+    font-weight: bold !important;
 }
 
 mark.encon-highlight.underline {
