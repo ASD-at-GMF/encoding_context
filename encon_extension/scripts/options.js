@@ -55,7 +55,7 @@ const saveOptions = () => {
   options.label_color = document.getElementById("label-color").value;
 
 
-  // Get the selected highlight styles (underline, italic)
+  // Get the selected highlight styles (bold, underline, italic)
   const highlight_style = [];
   document.querySelectorAll(".highlight-style").forEach((checkbox) => {
     if (checkbox.checked == true) highlight_style.push(checkbox.value);
