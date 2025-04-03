@@ -15,9 +15,10 @@ chrome.runtime.onMessage.addListener((message, sender) => {
       chrome.storage.session.set({ lastWord: message.word });
       chrome.storage.session.set({ wordDetails: message.wordDetails });
       console.log(message.wordDetails);
-    } 
-    else if (message.action === "toggle_word_finder") {
+    } else if (message.action === "toggle_word_finder") {
       toggle_word_finder();
+    } else if (message.action === "reload_data") {
+      get_data();
     }
   })();
 });
@@ -36,14 +37,17 @@ chrome.commands.onCommand.addListener((command) => {
 });
 
 const toggle_word_finder = () => {
-  chrome.storage.sync.get("on", function (on) { // Get the current state of the word finder
+  chrome.storage.sync.get("on", function (on) {
+    // Get the current state of the word finder
     // console.log(on.on);
     var on_new = !on.on;
     chrome.storage.sync.set({ on: on_new }); // Save the new state of the word finder
 
     try {
-      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) { // Query the active tab
-        chrome.tabs.sendMessage( // Send a message to the content script
+      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        // Query the active tab
+        chrome.tabs.sendMessage(
+          // Send a message to the content script
           tabs[0].id,
           { action: "toggle_word_finder", on: on_new },
           (response) => {
@@ -60,3 +64,61 @@ const toggle_word_finder = () => {
     }
   });
 };
+
+chrome.runtime.onStartup.addListener(async function () {
+  console.log("open");
+  await get_data();
+});
+
+chrome.runtime.onInstalled.addListener(async function () {
+  console.log("Installed");
+  await get_data();
+});
+
+async function get_data() {
+  var classifications = [];
+  chrome.storage.sync.get(["options", "on"], async function (data) {
+    if (data.options && data.options.classifications) {
+      classifications = data.options.classifications;
+    }
+    try {
+      var url = "https://context.tools/wordlist";
+      if (classifications) {
+        url += "?tag=" + classifications[0];
+        for (let i = 1; i < classifications.length; i++) {
+          url += "&tag=" + classifications[i];
+        }
+      }
+
+      const response = await fetch(url, {
+        // Fetch the words from the API
+        method: "GET",
+        headers: { "Content-Type": "application/json", dataType: "jsonp" },
+      }).catch((error) => {
+        console.error("Network error:", error);
+        return null;
+      });
+
+      // Check if fetch was successful
+      if (!response) {
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log(data);
+
+      // // Check if json.words exists
+      // if (!json || !json.lists) {
+      //   console.error("Invalid response format");
+      //   return;
+      // }
+
+      chrome.storage.local.set({ data }, () => {});
+    } catch (error) {
+      console.error("Error fetching words:", error.message);
+    }
+  });
+}
