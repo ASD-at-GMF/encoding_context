@@ -1,79 +1,93 @@
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Encoding Context Options</title>
-        <link rel="stylesheet" href="../styles/options.css" />
-    </head>
-    <body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Encoding Context Options</title>
+    <link rel="stylesheet" href="../styles/options.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:400,500,700"
+    />
+  </head>
+  <body>
+    <div class="options-container">
+      <header>
         <h1>Encoding Context</h1>
         <hr />
-
-        <div>
-            <h2>Color</h2>
-
-            <input
-                id="hightlight-color"
-                type="color"
-                aria-label="Highlight Color"
-            />
-            <label for="hightlight-color">Highlight Color</label><br />
-
-            <input id="label-color" type="color" aria-label="Label Color" />
-            <label for="label-color">Label Color</label><br />
+      </header>
+      <section class="option-section">
+        <h2>Color</h2>
+        <div class="color-picker">
+          <label for="hightlight-color">Highlight Color</label>
+          <input
+            id="hightlight-color"
+            type="color"
+            aria-label="Highlight Color"
+          />
         </div>
-        <hr />
-        <div>
-            <h2>Tags</h2>
-            <div
-                id="classification-labels-container"
-                aria-label="Classification labels"
-            ></div>
-            <label for="tag-select">Tags:</label>
-            <select name="tag-select" id="tag-select">
-                <option selected disabled hidden></option>
-            </select>
+        <div class="color-picker">
+          <label for="label-color">Label Color</label>
+          <input id="label-color" type="color" aria-label="Label Color" />
         </div>
-        <hr />
-        <div>
-            <h2>Highlight Style</h2>
-
-            <input
-                class="highlight-style"
-                type="checkbox"
-                id="highlight"
-                name="highlight"
-                value="highlight"
-                aria-label="Highlight"
-            />
-            <label for="highlight">Highlight</label><br />
-
+      </section>
+      <hr />
+      <section class="option-section">
+        <h2>Tags</h2>
+        <div
+          id="classification-labels-container"
+          aria-label="Classification labels"
+        ></div>
+        <div class="tag-select-container">
+          <label for="tag-select">Tags:</label>
+          <select name="tag-select" id="tag-select">
+            <option selected disabled hidden></option>
+          </select>
+        </div>
+      </section>
+      <hr />
+      <section class="option-section">
+        <h2>Highlight Style</h2>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
             <input
                 class="highlight-style"
                 type="checkbox"
-                id="underline"
-                name="underline"
-                value="underline"
-                aria-label="Underline"
+                id="bold"
+                name="bold"
+                value="bold"
+                aria-label="Bold"
             />
-            <label for="underline">Underline</label><br />
-
+            <label for="bold">Bold</label><br />
             <input
-                class="highlight-style"
-                type="checkbox"
-                id="italicize"
-                name="italicize"
-                value="italicize"
-                aria-label="Italicize"
+              class="highlight-style"
+              type="checkbox"
+              id="underline"
+              name="underline"
+              value="underline"
+              aria-label="Underline"
             />
-            <label for="italicize">Italicize</label><br />
+            <label for="underline">Underline</label>
+          </div>
+          <div class="checkbox-item">
+            <input
+              class="highlight-style"
+              type="checkbox"
+              id="italicize"
+              name="italicize"
+              value="italicize"
+              aria-label="Italicize"
+            />
+            <label for="italicize">Italicize</label>
+          </div>
         </div>
-        <hr />
-        <div>
-            <div id="status" role="status" aria-live="polite"></div>
-            <button id="save" aria-label="Save Settings">Save</button>
-        </div>
-
-        <script src="../scripts/options.js"></script>
-    </body>
+      </section>
+      <hr />
+      <section class="option-section">
+        <div id="status" role="status" aria-live="polite"></div>
+        <button id="save" aria-label="Save Settings">Save Settings</button>
+      </section>
+    </div>
+    <script src="../scripts/options.js"></script>
+  </body>
 </html>

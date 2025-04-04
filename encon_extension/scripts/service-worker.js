@@ -1,7 +1,7 @@
-// Turn word finder on
+// Turn word finder on by default
 chrome.storage.sync.set({ on: true });
 
-// to find the windowId of the active tab
+// Get the active window
 let windowId;
 chrome.tabs.onActivated.addListener(function (activeInfo) {
   windowId = activeInfo.windowId;
@@ -17,11 +17,13 @@ chrome.runtime.onMessage.addListener((message, sender) => {
       console.log(message.wordDetails);
     } else if (message.action === "toggle_word_finder") {
       toggle_word_finder();
+    } else if (message.action === "reload_data") {
+      get_data();
     }
   })();
 });
 
-// Listen for commands
+// Listen for keyboard shortcuts
 chrome.commands.onCommand.addListener((command) => {
   if (command === "toggle") {
     // Send toggle to popup
@@ -36,18 +38,21 @@ chrome.commands.onCommand.addListener((command) => {
 
 const toggle_word_finder = () => {
   chrome.storage.sync.get("on", function (on) {
+    // Get the current state of the word finder
     // console.log(on.on);
     var on_new = !on.on;
-    chrome.storage.sync.set({ on: on_new });
+    chrome.storage.sync.set({ on: on_new }); // Save the new state of the word finder
 
     try {
       chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        // Query the active tab
         chrome.tabs.sendMessage(
+          // Send a message to the content script
           tabs[0].id,
           { action: "toggle_word_finder", on: on_new },
           (response) => {
             if (chrome.runtime.lastError) {
-              setTimeout(ping, 1000);
+              console.log("Tab not ready:", chrome.runtime.lastError);
             } else {
               // console.log(response);
             }
@@ -57,12 +62,63 @@ const toggle_word_finder = () => {
     } catch {
       console.log("No Tab");
     }
-    // chrome.tabs.query({ active: true }, function (tabs) {
-    //   chrome.tabs.sendMessage(
-    //     tabs[0].id,
-    //     { action: "toggle_word_finder", on: on },
-    //     // function (response) {},
-    //   );
-    // });
   });
 };
+
+chrome.runtime.onStartup.addListener(async function () {
+  console.log("open");
+  await get_data();
+});
+
+chrome.runtime.onInstalled.addListener(async function () {
+  console.log("Installed");
+  await get_data();
+});
+
+async function get_data() {
+  var classifications = [];
+  chrome.storage.sync.get(["options", "on"], async function (data) {
+    if (data.options && data.options.classifications) {
+      classifications = data.options.classifications;
+    }
+    try {
+      var url = "https://context.tools/wordlist";
+      if (classifications) {
+        url += "?tag=" + classifications[0];
+        for (let i = 1; i < classifications.length; i++) {
+          url += "&tag=" + classifications[i];
+        }
+      }
+
+      const response = await fetch(url, {
+        // Fetch the words from the API
+        method: "GET",
+        headers: { "Content-Type": "application/json", dataType: "jsonp" },
+      }).catch((error) => {
+        console.error("Network error:", error);
+        return null;
+      });
+
+      // Check if fetch was successful
+      if (!response) {
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log(data);
+
+      // // Check if json.words exists
+      // if (!json || !json.lists) {
+      //   console.error("Invalid response format");
+      //   return;
+      // }
+
+      chrome.storage.local.set({ data }, () => {});
+    } catch (error) {
+      console.error("Error fetching words:", error.message);
+    }
+  });
+}

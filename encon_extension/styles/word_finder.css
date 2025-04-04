@@ -1,114 +1,139 @@
-/* Highlighted word style */
-mark {
-    background: #ffecb3; /* Softer yellow background for highlighting */
-    color: #000; /* Black text for better contrast */
+/* Define CSS variables for colors */
+:root {
+    --highlight-color: #ffecb3;
+    --highlight-text-color: #000000;
+    --highlight-opacity: 1;
+    --label-color: #ff6c6c;
+    --label-text-color: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --highlight-opacity: 0.8;
+        --highlight-text-color: #000000;
+    }
+}
+
+/* Highlight styles */
+mark.encon-highlight {
+    background-color: var(--highlight-color, #ffecb3) !important;
+    color: var(--highlight-text-color, #000000) !important;
+    opacity: var(--highlight-opacity, 1);
     padding: 2px 4px;
-    border-radius: 4px; /* Rounded corners for a smoother look */
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    
+    /* Fallback highlights*/
+    background-color: #ffecb3 !important;   
+    color: #000000 !important;
+}
+
+/* Add specific styles for different highlight combinations */
+/* mark.encon-highlight.highlight {
+    background-color: var(--highlight-color) !important;
+} */
+
+mark.encon-highlight.bold {
+    font-weight: bold !important;
+}
+
+mark.encon-highlight.underline {
+    text-decoration: underline !important;
+    text-decoration-thickness: 2px;
+    text-decoration-color: var(--highlight-color);
+}
+
+mark.encon-highlight.italicize {
+    font-style: italic !important;
 }
 
 /* Tooltip container */
 .encon_tooltip {
-    position: relative; /* Position relative for absolute tooltip */
-    display: inline-block;
-    cursor: pointer; /* Changes cursor to pointer on hover */
-    
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
 }
 
-/* Tooltip text (popup) */
+/* Tooltip text */
 .encon_tooltip .tooltiptext {
-    visibility: hidden;
-    width: 220px;
-    background-color: #15428a; /* Dark gray background for a modern look */
-    color: #fff; /* White text for contrast */
-    text-align: left; /* Align text to the left for better reading flow */
-    padding: 10px; /* Added padding for spacing */
-    border-radius: 8px; /* Rounded corners for a modern design */
-    box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.25); /* Slight shadow for depth */
-    position: absolute;
-    bottom: 125%;
-    left: 50%;
-    transform: translateX(-50%);
-    transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth animations */
-    opacity: 0; /* Start invisible */
-    z-index: 2147483647;
-    white-space: normal;
-    font-size: 12px !important; /* Slightly smaller font size for readability */
-    font-family: Arial, sans-serif !important; /* Force Arial font */
-    font-weight: normal !important; /* Prevent bold inheritance */
-    font-style: normal !important; /* Prevent italic inheritance */
-    text-transform: none !important; /* Prevent capitalization inheritance */
-    text-decoration: none !important; /* Prevent underline inheritance */
+  visibility: hidden;
+  width: 240px;
+  background-color: #15428a;
+  color: #fff;
+  text-align: left;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.25);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0;
+  z-index: 2147483647;
+  white-space: normal;
+  font-size: 12px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  text-transform: none;
+  text-decoration: none;
 }
 
-/* Show the tooltip text on hover or focus */
 .encon_tooltip:hover .tooltiptext,
 .encon_tooltip:focus .tooltiptext {
-    visibility: visible;
-    opacity: 1; /* Fade in */
-    transform: translateX(-50%) translateY(-5px); /* Slight upward movement */
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-5px);
 }
 
-/* Tooltip header */
 .tooltipheader {
-    font-size: 14px !important; /* Slightly smaller size for the header */
-    font-weight: bold; /* Header text stays bold */
-    margin-bottom: 6px; /* Reduced spacing for compactness */
-    text-decoration: underline;
-    color: #ffecb3; /* Softer yellow for a complementary look */
-    font-family: Arial, sans-serif !important; /* Force Arial font */
-    font-style: normal !important; /* Prevent italic inheritance */
-    text-transform: none !important; /* Prevent capitalization inheritance */
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  text-decoration: underline;
+  color: #ffecb3;
 }
 
-/* Tooltip context */
 .tooltipcontext {
-    font-size: 12px !important; /* Slightly smaller size for the context text */
-    line-height: 1.4; /* Adjusted line height for better readability */
-    color: #e0e0e0; /* Light gray for softer contrast */
-    font-family: Arial, sans-serif !important; /* Force Arial font */
-    font-style: normal !important; /* Prevent italic inheritance */
-    font-weight: normal !important; /* Prevent bold inheritance */
-    text-transform: none !important; /* Prevent capitalization inheritance */
-    text-decoration: none !important; /* Prevent underline inheritance */
+  font-size: 12px;
+  line-height: 1.4;
+  color: #e0e0e0;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
 }
 
-/* Remove arrow (dialogue box styling) */
 .encon_tooltip .tooltiptext::after {
-    content: none; /* Removes the arrow completely */
+  content: none;
 }
 
-/* Tooltip hover effect */
-.tooltiptext:hover {
-    background-color: #15428a; /* Slightly lighter on hover */
-}
-
-/* Remove bottom positioning when tooltip is moved below the word */
 .encon_tooltip .tooltiptext.below {
-    bottom: auto;
-    top: 125%;
-    transform: translateX(-50%);
+  bottom: auto;
+  top: 125%;
+  transform: translateX(-50%);
 }
 
 .classification {
     display: inline-block;
-    background-color: #ff6c6c;
+    background-color: var(--label-color, #ff6c6c);
+    color: var(--label-text-color, #ffffff);
     padding: 5px 10px;
     border-radius: 10px;
     margin: 2px;
     font-size: 14px;
+    opacity: var(--highlight-opacity);
 }
 
 .open-sidepanel-button {
-    background-color: #d8b500; /* A bright yellow button */
-    color: #fff;              /* Black text for contrast */
-    padding: 6px 12px;        /* Some padding to make it bigger */
-    margin-top: 5px;          /* Spacing above the button */
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 12px;          /* Match your tooltip text size */
-  }
+  background-color: #d8b500;
+  color: #fff;
+  padding: 6px 12px;
+  margin-top: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
 
-  .open-sidepanel-button:hover {
-    background-color: #c48b1a; /* Slightly darker yellow on hover */
-  }
+.open-sidepanel-button:hover {
+  background-color: #c48b1a;
+}
