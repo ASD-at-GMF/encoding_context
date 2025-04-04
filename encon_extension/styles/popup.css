@@ -1,6 +1,15 @@
-/* Reset and box sizing */
-* {
-  box-sizing: border-box;
+:root {
+    --label-color: #ff6c6c;
+    --label-text-color: #ffffff;
+}
+
+/* Navy blue background with white text  */
+body {
+    overflow: hidden;
+    background-color: #0a1f44;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    padding: 16px;
 }
 
 body {

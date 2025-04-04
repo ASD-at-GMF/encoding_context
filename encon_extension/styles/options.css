@@ -1,8 +1,9 @@
-/* Reset and box sizing */
-* {
-  box-sizing: border-box;
+:root {
+    --label-color: #ff6c6c;
+    --label-text-color: #ffffff;
 }
 
+/* Navy blue background with white text*/
 body {
   background: linear-gradient(135deg, #0a1f44, #1e2a6d);
   color: #ffffff;
@@ -115,7 +116,23 @@ button:hover {
 }
 
 #status {
-  text-align: center;
-  font-size: 16px;
-  margin-bottom: 10px;
+    text-align: center;
+    font-size: 16px;
+    color: #d1d1d1;
+    margin-top: 10px;
+}
+
+/* Red background with white text*/
+.chip {
+    background-color: var(--label-color, #ff6c6c);
+    color: var(--label-text-color, #ffffff);
+    display: inline-block;
+    padding: 6px 14px;
+    margin: 4px;
+    border-radius: 16px;
+    font-size: 14px;
+}
+
+#categories-container {
+    margin-top: 12px;
 }
