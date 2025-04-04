@@ -150,8 +150,8 @@ function findWords(words) {
           sidePanelButton.addEventListener('click', function () {
             chrome.runtime.sendMessage({
               action: "open_side_panel",
-              word: key,
-              wordDetails: value,
+              word: word,
+              wordDetails: words.get(word),
             });
           });
 
@@ -159,8 +159,8 @@ function findWords(words) {
           mark.addEventListener("click", function () {
             chrome.runtime.sendMessage({
               action: "open_side_panel",
-              word: key,
-              wordDetails: value,
+              word: word,
+              wordDetails: words.get(word),
             });
           });
 
@@ -197,8 +197,8 @@ function findWords(words) {
             tooltip.addEventListener("click", function () {
               chrome.runtime.sendMessage({
                 action: "open_side_panel",
-                word: key,
-                wordDetails: value,
+                word: word,
+                wordDetails: words.get(word),
               });
             });
 
