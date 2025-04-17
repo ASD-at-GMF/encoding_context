@@ -31,16 +31,18 @@ function findWords(words) {
   const highlightColor = extensionOptions.hightlight_color || "#ffecb3";
   var instance = new Mark(document);
   instance.mark([...words.keys()], {
-    // Mark each word in the words Map
+    accuracy: {
+      value: "exactly",
+      limiters: [",", ".", "!", "?", " ", "\n", "\t", "(", ")", "[", "]", "{", "}"]
+    },
     className: `encon-highlight ${highlightStyles.join(" ")}`,
     each: function (element) {
-      element.style.backgroundColor = highlightColor; // Set the background color of the element
-
-      // Calculate contrasting color for text
+      element.style.backgroundColor = highlightColor;
+  
       const rgb = hexToRgb(highlightColor);
       const brightness = calculateBrightness(rgb.r, rgb.g, rgb.b);
       const textColor = brightness > 128 ? "#000000" : "#ffffff";
-
+  
       element.style.color = textColor;
     },
   });
