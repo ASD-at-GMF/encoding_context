@@ -473,6 +473,7 @@ async function initializeData() {
     wordlist.terms.forEach((term) => {
       worddata = {};
       worddata.definition = term.short_definition;
+      worddata.definition_long = term.long_definition;
       worddata.classifications = [wordlist.listName];
       worddata.adllink = term.wiki_link;
       words.set(term.term, worddata);

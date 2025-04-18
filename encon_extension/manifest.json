@@ -40,5 +40,11 @@
       ],
       "css": ["styles/word_finder.css"]
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["scripts/marked.min.js"],
+      "matches": ["<all_urls>"]
+    }
   ]
 }

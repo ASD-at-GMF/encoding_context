@@ -1,101 +1,234 @@
 :root {
-    --label-color: #ff6c6c;
-    --label-text-color: #ffffff;
+  --label-color: #ff6c6c;
+  --label-text-color: #ffffff;
 }
 
 p {
-    font-size: 16px;
+  font-size: 16px;
 }
 
 body {
-  background: linear-gradient(135deg, #0a1f44, #1e2a6d);
-  color: #ffffff;
-  font-family: "Roboto", sans-serif;
-  margin: 0;
-  padding: 14px;
+background: linear-gradient(135deg, #0a1f44, #1e2a6d);
+color: #ffffff;
+font-family: "Roboto", sans-serif;
+margin: 0;
+padding: 14px;
 }
 
 .sidepanel-container {
-  max-width: 800px;
-  margin: 0 auto;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+max-width: 800px;
+margin: 0 auto;
+background: rgba(255, 255, 255, 0.05);
+padding: 20px;
+border-radius: 10px;
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 /* sidebar  */
 /* navy blue with white text */
 body {
-    background-color: #0a1f44;
-    color: #ffffff;
-    font-family: Arial, sans-serif;
-    padding: 14px;
-    width: 100%;
-    height: 100vh;
+  background-color: #0a1f44;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  padding: 14px;
+  width: 100%;
+  height: 100vh;
 }
 
 hr {
-  border: none;
-  border-top: 1px solid #ffffff;
-  margin: 16px 0;
+border: none;
+border-top: 1px solid #ffffff;
+margin: 16px 0;
 }
 
 main {
-  padding: 16px;
-  background-color: rgba(30, 53, 87, 0.8);
-  border-radius: 8px;
+padding: 16px;
+background-color: rgba(30, 53, 87, 0.8);
+border-radius: 8px;
 }
 
 /* Gold text */
 #definition-word {
-    color: #ffcc00;
-    font-size: 22px;
-    margin-top: 16px;
-    margin-bottom: 8px;
-    font-weight: bold;
+  color: #ffcc00;
+  font-size: 22px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-weight: bold;
 }
 
 #definition-word {
-  color: #ffcc00;
-  font-size: 24px;
-  margin: 10px 0;
-  font-weight: 700;
+color: #ffcc00;
+font-size: 24px;
+margin: 10px 0;
+font-weight: 700;
+}
+
+#definition-text {
+margin-bottom: 10px;
+}
+
+#definition-text-long {
+border-top: 1px solid rgba(255, 255, 255, 0.1);
+padding-top: 12px;
 }
 
 /* Red background with white text*/
 .chip {
-    background-color: var(--label-color, #ff6c6c);
-    color: var(--label-text-color, #ffffff);
-    display: inline-block;
-    padding: 6px 14px;
-    margin: 4px;
-    border-radius: 16px;
-    font-size: 14px;
+  background-color: var(--label-color, #ff6c6c);
+  color: var(--label-text-color, #ffffff);
+  display: inline-block;
+  padding: 6px 14px;
+  margin: 4px;
+  border-radius: 16px;
+  font-size: 14px;
+}
+
+#definition-text-long {
+margin-top: 12px;
+margin-bottom: 15px;
+line-height: 1.5;
+font-size: 15px;
+color: #ffffff;
+}
+
+#definition-text-long strong {
+font-weight: 600;
+color: #ffcc00;
+}
+
+#definition-text-long p {
+margin-top: 10px;
+margin-bottom: 10px;
 }
 
 .learn-more {
-  margin-top: 12px;
-  font-size: 16px;
+margin-top: 12px;
+font-size: 16px;
 }
 
 #definition-link {
-  color: #ffcc00;
-  text-decoration: none;
-  font-weight: 500;
+color: #ffcc00;
+text-decoration: none;
+font-weight: 500;
 }
 
 #definition-link:hover {
-  color: #ffdb4d;
-  text-decoration: underline;
+color: #ffdb4d;
+text-decoration: underline;
 }
 
 #footer-image {
-    display: block;
-    margin: 20px auto;
-    max-width: 80%;
-    height: auto;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    border: 3px solid #ffcc00;
+  display: block;
+  margin: 20px auto;
+  max-width: 80%;
+  height: auto;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  border: 3px solid #ffcc00;
+}
+
+/* Markdown styling for the long definition */
+#definition-text-long h1 {
+font-size: 20px;
+margin-top: 14px;
+margin-bottom: 8px;
+color: #ffcc00;
+font-weight: 700;
+}
+
+#definition-text-long h2 {
+font-size: 18px;
+margin-top: 12px;
+margin-bottom: 6px;
+color: #ffcc00;
+font-weight: 600;
+}
+
+#definition-text-long h3, 
+#definition-text-long h4 {
+font-size: 16px;
+margin-top: 10px;
+margin-bottom: 6px;
+color: #ffcc00;
+font-weight: 600;
+}
+
+#definition-text-long ul, 
+#definition-text-long ol {
+margin-left: 1.5em;
+margin-bottom: 10px;
+line-height: 1.5;
+}
+
+#definition-text-long li {
+margin-bottom: 5px;
+}
+
+#definition-text-long code {
+background-color: rgba(255, 255, 255, 0.1);
+padding: 0.2em 0.4em;
+border-radius: 3px;
+font-family: monospace;
+color: #ffcc00;
+}
+
+#definition-text-long pre {
+background-color: rgba(255, 255, 255, 0.1);
+padding: 10px;
+border-radius: 5px;
+overflow-x: auto;
+margin: 10px 0;
+}
+
+#definition-text-long blockquote {
+border-left: 4px solid #ffcc00;
+padding-left: 10px;
+margin-left: 0;
+margin-right: 0;
+font-style: italic;
+color: rgba(255, 255, 255, 0.8);
+}
+
+#definition-text-long a {
+color: #ffcc00;
+text-decoration: none;
+}
+
+#definition-text-long a:hover {
+color: #ffdb4d;
+text-decoration: underline;
+}
+
+#definition-text-long img {
+max-width: 100%;
+border-radius: 5px;
+border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#definition-text-long table {
+border-collapse: collapse;
+width: 100%;
+margin: 10px 0;
+}
+
+#definition-text-long th, 
+#definition-text-long td {
+border: 1px solid rgba(255, 255, 255, 0.2);
+padding: 8px;
+text-align: left;
+}
+
+#definition-text-long th {
+background-color: rgba(255, 255, 255, 0.1);
+color: #ffcc00;
+}
+
+#definition-text-long hr {
+border: none;
+border-top: 1px solid rgba(255, 255, 255, 0.2);
+margin: 15px 0;
+}
+
+#definition-text-long em {
+font-style: italic;
 }
