@@ -35,6 +35,7 @@ function findWords(words) {
   for (let i = 0; i < mark_array.length; i += chunkSize) {
     const chunk = mark_array.slice(i, i + chunkSize);
     instance.mark(chunk, {
+      separateWordSearch: false,
       accuracy: {
         value: "exactly",
         limiters: [",", ".", "!", "?", " ", "\n", "\t", "(", ")", "[", "]", "{", "}"]
