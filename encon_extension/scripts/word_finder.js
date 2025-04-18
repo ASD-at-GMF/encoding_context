@@ -29,23 +29,28 @@ function clearWords() {
 function findWords(words) {
   const highlightStyles = extensionOptions.highlight_style || [];
   const highlightColor = extensionOptions.hightlight_color || "#ffecb3";
-  var instance = new Mark(document);
-  instance.mark([...words.keys()], {
-    accuracy: {
-      value: "exactly",
-      limiters: [",", ".", "!", "?", " ", "\n", "\t", "(", ")", "[", "]", "{", "}"]
-    },
-    className: `encon-highlight ${highlightStyles.join(" ")}`,
-    each: function (element) {
-      element.style.backgroundColor = highlightColor;
-  
-      const rgb = hexToRgb(highlightColor);
-      const brightness = calculateBrightness(rgb.r, rgb.g, rgb.b);
-      const textColor = brightness > 128 ? "#000000" : "#ffffff";
-  
-      element.style.color = textColor;
-    },
-  });
+  let instance = new Mark(document);
+  let mark_array = [...words.keys()];
+  const chunkSize = 500;
+  for (let i = 0; i < mark_array.length; i += chunkSize) {
+    const chunk = mark_array.slice(i, i + chunkSize);
+    instance.mark(chunk, {
+      accuracy: {
+        value: "exactly",
+        limiters: [",", ".", "!", "?", " ", "\n", "\t", "(", ")", "[", "]", "{", "}"]
+      },
+      className: `encon-highlight ${highlightStyles.join(" ")}`,
+      each: function (element) {
+        element.style.backgroundColor = highlightColor;
+
+        const rgb = hexToRgb(highlightColor);
+        const brightness = calculateBrightness(rgb.r, rgb.g, rgb.b);
+        const textColor = brightness > 128 ? "#000000" : "#ffffff";
+
+        element.style.color = textColor;
+      },
+    });
+  }
 
   let marks = document.querySelectorAll("mark.encon-highlight");
 
@@ -475,7 +480,7 @@ async function initializeData() {
       worddata.definition = term.short_definition;
       worddata.definition_long = term.long_definition;
       worddata.classifications = [wordlist.listName];
-      worddata.adllink = term.wiki_link;
+      worddata.adlLink = term.wiki_link;
       words.set(term.term, worddata);
     });
   });
