@@ -31,6 +31,7 @@ function findWords(words) {
   const highlightColor = extensionOptions.hightlight_color || "#ffecb3";
   var instance = new Mark(document);
   instance.mark([...words.keys()], {
+    separateWordSearch: false,
     accuracy: {
       value: "exactly",
       limiters: [",", ".", "!", "?", " ", "\n", "\t", "(", ")", "[", "]", "{", "}"]
