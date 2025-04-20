@@ -28,10 +28,10 @@ chrome.commands.onCommand.addListener((command) => {
   if (command === "toggle") {
     // Send toggle to popup
     chrome.runtime
-      .sendMessage({
-        action: "toggle_word_finder_option",
-      })
-      .catch((e) => console.log());
+        .sendMessage({
+          action: "toggle_word_finder_option",
+        })
+        .catch((e) => console.log());
     toggle_word_finder();
   }
 });
@@ -47,16 +47,16 @@ const toggle_word_finder = () => {
       chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         // Query the active tab
         chrome.tabs.sendMessage(
-          // Send a message to the content script
-          tabs[0].id,
-          { action: "toggle_word_finder", on: on_new },
-          (response) => {
-            if (chrome.runtime.lastError) {
-              console.log("Tab not ready:", chrome.runtime.lastError);
-            } else {
-              // console.log(response);
-            }
-          },
+            // Send a message to the content script
+            tabs[0].id,
+            { action: "toggle_word_finder", on: on_new },
+            (response) => {
+              if (chrome.runtime.lastError) {
+                console.log("Tab not ready:", chrome.runtime.lastError);
+              } else {
+                // console.log(response);
+              }
+            },
         );
       });
     } catch {
@@ -116,7 +116,12 @@ async function get_data() {
       //   return;
       // }
 
-      chrome.storage.local.set({ data }, () => {});
+      chrome.storage.local.set({ data }, () => {
+        var error = chrome.runtime.lastError;
+        if (error) {
+          console.log(error);
+        }
+      });
     } catch (error) {
       console.error("Error fetching words:", error.message);
     }

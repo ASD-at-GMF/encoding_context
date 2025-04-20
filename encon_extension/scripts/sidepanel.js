@@ -21,10 +21,12 @@ function updateContext(word) {
   document.body.querySelector("#select-a-word").style.display = "none"; // Hide instructions.
 
   chrome.storage.session.get("wordDetails", ({ wordDetails }) => { // Get the word details from storage
-    console.log(wordDetails);
+    console.log("Word details in sidepanel:", wordDetails);
+    console.log("Long definition:", wordDetails?.definition_long);
     if (!wordDetails) { // If there are no word details, give default message and return
       document.body.querySelector("#definition-word").innerText = word;
       document.body.querySelector("#definition-text").innerText = "Unknown word!";
+      document.body.querySelector("#definition-text-long").innerHTML = "";
       document.body.querySelector("#classification-labels-container").innerHTML = "";
       document.body.querySelector("#definition-link").href = "https://extremismterms.adl.org/";
       return;
@@ -33,6 +35,17 @@ function updateContext(word) {
     // Show word, definition, link, and classification chips.
     document.body.querySelector("#definition-word").innerText = word;
     document.body.querySelector("#definition-text").innerText = wordDetails.definition;
+    if (wordDetails.definition_long) {
+      try {
+        // Convert markdown to HTML using marked
+        const html = marked.parse(wordDetails.definition_long);
+        document.body.querySelector("#definition-text-long").innerHTML = html;
+      } catch (error) {
+        console.error("Error converting markdown:", error);
+        // Fallback to plain text if conversion fails
+        document.body.querySelector("#definition-text-long").innerHTML = wordDetails.definition_long;
+      }
+    }
     document.body.querySelector("#definition-link").href = wordDetails.adlLink;
 
     // Add a chip for each classification.

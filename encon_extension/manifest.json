@@ -18,7 +18,7 @@
   "side_panel": {
     "default_path": "pages/sidepanel.html"
   },
-  "permissions": ["sidePanel", "contextMenus", "storage", "tabs"],
+  "permissions": ["sidePanel", "contextMenus", "storage", "unlimitedStorage","tabs"],
   "commands": {
     "toggle": {
       "suggested_key": {
@@ -39,6 +39,12 @@
         "scripts/word_finder.js"
       ],
       "css": ["styles/word_finder.css"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["scripts/marked.min.js"],
+      "matches": ["<all_urls>"]
     }
   ]
 }
