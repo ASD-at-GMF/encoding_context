@@ -16,8 +16,7 @@ var extensionOptions = {
 };
 
 // Clear all words from the page
-function clearWords() {
-  var instance = new Mark(document);
+function clearWords(instance = new Mark(document)) {
   instance.unmark(); // Remove all highlights from the page
 
   var tooltips = document.getElementsByClassName("tooltiptext");
@@ -26,10 +25,9 @@ function clearWords() {
   }
 }
 
-function findWords(words) {
+function findWords(words, instance = new Mark(document)) {
   const highlightStyles = extensionOptions.highlight_style || [];
   const highlightColor = extensionOptions.hightlight_color || "#ffecb3";
-  let instance = new Mark(document);
   let mark_array = [...words.keys()];
   const chunkSize = 500;
   for (let i = 0; i < mark_array.length; i += chunkSize) {
@@ -38,7 +36,7 @@ function findWords(words) {
       separateWordSearch: false,
       accuracy: {
         value: "exactly",
-        limiters: [",", ".", "!", "?", " ", "\n", "\t", "(", ")", "[", "]", "{", "}"]
+        limiters: ["@", ",", ".", "!", "?", " ", "\n", "\t", "(", ")", "[", "]", "{", "}"]
       },
       className: `encon-highlight ${highlightStyles.join(" ")}`,
       each: function (element) {
@@ -71,15 +69,15 @@ function findWords(words) {
         ${words.get(word)?.definition || "No definition found"}<br>
         ${
           words.get(word)?.classifications
-            ? words
-                .get(word)
-                .classifications.map(
-                  (classification) =>
-                    `<span class="classification">${classification}</span>`,
-                )
-                .join(" ")
-            : ""
-        }
+              ? words
+                  .get(word)
+                  .classifications.map(
+                      (classification) =>
+                          `<span class="classification">${classification}</span>`,
+                  )
+                  .join(" ")
+              : ""
+      }
         <br>
         <button class="open-sidepanel-button">Open Sidepanel</button>
       `;
@@ -112,7 +110,7 @@ function findWords(words) {
       const rect = mark.getBoundingClientRect();
       const tooltipRect = tooltip.getBoundingClientRect();
       let left =
-        rect.left + window.scrollX + (rect.width - tooltipRect.width) / 2;
+          rect.left + window.scrollX + (rect.width - tooltipRect.width) / 2;
       let top = rect.top + window.scrollY - tooltipRect.height - 5;
 
       if (left + tooltipRect.width > window.innerWidth) {
@@ -180,7 +178,7 @@ function findWords(words) {
             const rect = mark.getBoundingClientRect();
             const tooltipRect = tooltip.getBoundingClientRect();
             let left =
-              rect.left + window.scrollX + (rect.width - tooltipRect.width) / 2;
+                rect.left + window.scrollX + (rect.width - tooltipRect.width) / 2;
             let top = rect.top + window.scrollY - tooltipRect.height - 5; // Above the word
 
             // Prevent tooltip from overflowing screen
@@ -201,14 +199,14 @@ function findWords(words) {
             tooltip.style.top = `${top}px`;
           });
 
-            // Allow clicking on the tooltip to open the side panel - not sure why not working
-            tooltip.addEventListener("click", function () {
-              chrome.runtime.sendMessage({
-                action: "open_side_panel",
-                word: word,
-                wordDetails: words.get(word),
-              });
+          // Allow clicking on the tooltip to open the side panel - not sure why not working
+          tooltip.addEventListener("click", function () {
+            chrome.runtime.sendMessage({
+              action: "open_side_panel",
+              word: word,
+              wordDetails: words.get(word),
             });
+          });
 
 
           // Prevent tooltip from disappearing when hovering over it
@@ -237,14 +235,14 @@ function findWords(words) {
     tooltip.addEventListener("mouseleave", hideTooltip);
 
     tooltip
-      .querySelector(".open-sidepanel-button")
-      .addEventListener("click", function () {
-        chrome.runtime.sendMessage({
-          action: "open_side_panel",
-          word: word,
-          wordDetails: words.get(word),
+        .querySelector(".open-sidepanel-button")
+        .addEventListener("click", function () {
+          chrome.runtime.sendMessage({
+            action: "open_side_panel",
+            word: word,
+            wordDetails: words.get(word),
+          });
         });
-      });
 
     mark.addEventListener("click", () => {
       showTooltip();
@@ -253,30 +251,47 @@ function findWords(words) {
   });
 }
 
-var on = false;
+let on_var = false;
 // Main function to toggle the word finder
 function main(on) {
   // console.log(on);
   if (on === true) {
-    on = true;
+    on_var = true;
     findWords(words);
+    observer.observe(targetNode, config);
   } else {
-    on = false;
+    on_var = false;
     clearWords();
+    observer.disconnect();
   }
   return true;
 }
+const targetNode = document;
+const config = { subtree: true, childList: true};
+const callback = function(mutationsList, observer) {
+  observer.disconnect();
+  for (const mutation of mutationsList) {
+    for (const node of mutation.addedNodes) {
+      if (node.classList && !node.classList.contains("tooltiptext")) {
+        clearWords(new Mark(node));
+        findWords(words, new Mark(node));
+      }
+    }
+  }
+  observer.observe(targetNode, config);
+};
+const observer = new MutationObserver(callback);
 
 // Helper function to convert hex to RGB
 function hexToRgb(hex) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); // regex to match hex color
   return result
-    ? {
+      ? {
         r: parseInt(result[1], 16),
         g: parseInt(result[2], 16),
         b: parseInt(result[3], 16),
       }
-    : null;
+      : null;
 }
 
 // Helper function to calculate color brightness
@@ -295,12 +310,12 @@ function updateHighlightColors(highlightColor) {
   const textColor = brightness > 128 ? "#000000" : "#ffffff";
 
   document.documentElement.style.setProperty(
-    "--highlight-color",
-    highlightColor,
+      "--highlight-color",
+      highlightColor,
   ); // Create CSS variable style
   document.documentElement.style.setProperty(
-    "--highlight-text-color",
-    textColor,
+      "--highlight-text-color",
+      textColor,
   );
 
   // Create or update a stylesheet with the new colors
@@ -360,7 +375,7 @@ function updateLabelColors(labelColor) {
 
   // Update existing classification spans
   const classificationSpans = document.querySelectorAll(
-    ".classification, span.chip",
+      ".classification, span.chip",
   );
   console.log(`Updating ${classificationSpans.length} classification spans`);
 
@@ -390,13 +405,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Initialize color scheme listener
 window
-  .matchMedia("(prefers-color-scheme: dark)")
-  .addEventListener("change", () => {
-    // Use our cached options instead of retrieving from storage again
-    if (extensionOptions.hightlight_color) {
-      updateHighlightColors(extensionOptions.hightlight_color);
-    }
-  });
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", () => {
+      // Use our cached options instead of retrieving from storage again
+      if (extensionOptions.hightlight_color) {
+        updateHighlightColors(extensionOptions.hightlight_color);
+      }
+    });
 
 // Main listener for option changes
 chrome.storage.onChanged.addListener((changes, namespace) => {
@@ -417,16 +432,16 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 
       // Update highlight color if it's changed
       if (
-        newOptions.hightlight_color &&
-        newOptions.hightlight_color !== extensionOptions.hightlight_color
+          newOptions.hightlight_color &&
+          newOptions.hightlight_color !== extensionOptions.hightlight_color
       ) {
         updateHighlightColors(newOptions.hightlight_color);
       }
 
       // Update label color if it's changed
       if (
-        newOptions.label_color &&
-        newOptions.label_color !== extensionOptions.label_color
+          newOptions.label_color &&
+          newOptions.label_color !== extensionOptions.label_color
       ) {
         updateLabelColors(newOptions.label_color);
       }
@@ -473,16 +488,19 @@ const wordlists = [];
 var words = new Map();
 
 async function initializeData() {
+  let host = window.location.host.replace(/^www\./,'')
   const data = await chrome.storage.local.get("data");
   Object.assign(wordlists, data.data.lists);
   wordlists.forEach((wordlist) => {
     wordlist.terms.forEach((term) => {
-      worddata = {};
-      worddata.definition = term.short_definition;
-      worddata.definition_long = term.long_definition;
-      worddata.classifications = [wordlist.listName];
-      worddata.adlLink = term.wiki_link;
-      words.set(term.term, worddata);
+      if (term.sites == null || term.sites.split(",").includes(host)) {
+        worddata = {};
+        worddata.definition = term.short_definition;
+        worddata.definition_long = term.long_definition;
+        worddata.classifications = [wordlist.listName];
+        worddata.adlLink = term.wiki_link;
+        words.set(term.term, worddata);
+      }
     });
   });
 }
