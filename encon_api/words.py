@@ -50,17 +50,18 @@ class TermList:
         return {"listId": self.id, "listName": self.list_name, "tags": self.tags, "terms": self.terms}
 
 class Term:
-    def __init__(self, term, short_definition, long_definition, wiki_link, aliases, regex_pattern, additional_info, term_id=0):
+    def __init__(self, term, short_definition, long_definition, wiki_link, sites, aliases, regex_pattern, additional_info, term_id=0):
         self.term = term
         self.short_definition = short_definition
         self.long_definition = long_definition
         self.wiki_link = wiki_link
+        self.sites = sites
         self.aliases = aliases
         self.regex_pattern = regex_pattern
         self.additional_info = additional_info
         self.term_id=term_id
     def to_dict(self):
-        return {"term_id": self.term_id, "term": self.term, "short_definition": self.short_definition, "long_definition": self.long_definition, "wiki_link": self.wiki_link, "aliases": self.aliases, "regex_pattern": self.regex_pattern, "additional_info": self.additional_info}
+        return {"term_id": self.term_id, "term": self.term, "short_definition": self.short_definition, "long_definition": self.long_definition, "wiki_link": self.wiki_link, "sites": self.sites, "aliases": self.aliases, "regex_pattern": self.regex_pattern, "additional_info": self.additional_info}
 
 test = Word("test", "Take measures to check the quality, performance, or reliability of (something), especially before putting it into widespread use or practice.", ["Technical","Verification"], "https://extremismterms.adl.org/search?keywords=test&sort_by=search_api_relevance",
         "A test is a structured procedure or assessment used to evaluate a person's knowledge, skills, abilities, performance, or understanding of a specific subject, process, or function. Tests can be formal or informal and are commonly used in academic, professional, scientific, and technical contexts. For example, in education, a test might involve multiple-choice or essay questions to measure a student’s grasp of history or mathematics. In software development, a test refers to a procedure that checks whether a program or system behaves as expected under specific conditions, such as unit testing a function to ensure it returns the correct output. Medical tests, like blood tests, are used to detect health conditions or monitor treatment effectiveness. Essentially, a test is a means of gathering information to make informed decisions, identify areas for improvement, or ensure reliability and accuracy in various settings."
