@@ -76,12 +76,20 @@ function updateContext(word) {
       classificationLabelsContainer.innerHTML = wordDetails.classifications // Add a chip for each classification
         .map(
           (classification) =>
-            `<span class="chip" role="tag" style="background-color: ${labelColor}; color: ${textColor};" aria-label="Classified as ${classification}">${classification}</span>`,
+            `<span class="chip" role="tag" style="background-color: ${list_colors.get(classification)?.highlight || labelColor}; color: ${list_colors.get(classification)?.text || textColor};" aria-label="Classified as ${classification}">${classification}</span>`,
         )
         .join("");
     });
   });
 }
+
+async function get_colors() {
+  const data = await chrome.storage.local.get("data") ;
+  list_colors = new Map(Object.entries(data.data.list_colors));
+}
+get_colors();
+
+let list_colors = new Map();
 
 // Function to determine best text color based on background color
 function getContrastTextColor(hexColor) {

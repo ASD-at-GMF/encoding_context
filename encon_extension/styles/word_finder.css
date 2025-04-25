@@ -16,16 +16,16 @@
 
 /* Highlight styles */
 mark.encon-highlight {
-    background-color: var(--highlight-color, #ffecb3) !important;
-    color: var(--highlight-text-color, #000000) !important;
+    /*background-color: var(--highlight-color, #ffecb3) !important;*/
+    /*color: var(--highlight-text-color, #000000) !important;*/
     opacity: var(--highlight-opacity, 1);
     padding: 2px 4px;
     border-radius: 4px;
     transition: background-color 0.3s ease, color 0.3s ease;
     
     /* Fallback highlights*/
-    background-color: #ffecb3 !important;   
-    color: #000000 !important;
+    background-color: #ffecb3;
+    color: #000000;
 }
 
 /* Add specific styles for different highlight combinations */

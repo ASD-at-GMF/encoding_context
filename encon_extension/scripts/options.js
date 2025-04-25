@@ -70,6 +70,7 @@ const saveOptions = () => {
   status.className = "saving";
 
   chrome.storage.sync.set({ options }, () => {
+    makeChips()
     // Check for any errors
     if (chrome.runtime.lastError) {
       console.error("Error saving options:", chrome.runtime.lastError);
@@ -129,13 +130,14 @@ async function restoreOptions() {
 }
 
 function makeChips() {
+  console.log(options.label_color_color);
   const classificationLabelsContainer = document.body.querySelector(
     "#classification-labels-container",
   );
   classificationLabelsContainer.innerHTML = tags
     .map(
       (classification) =>
-        `<button class="chip" role="tag" aria-label="Classified as ${classification}">${classification}</button>`,
+        `<button class="chip" style="background-color: ${list_colors.get(classification)?.highlight || document.getElementById("label-color").value}; color: ${list_colors.get(classification)?.text || "#000000"};"role="tag" aria-label="Classified as ${classification}">${classification}</button>`,
     )
     .join("");
 
@@ -160,12 +162,14 @@ function chipRemove(newTag) {
   });
 }
 
+let list_colors = new Map();
+
 async function fillTagSelect(selectedTags) {
-  var tags = await chrome.storage.local.get(["data", "on"], function (data) {
+  await chrome.storage.local.get("data", function (data) {
     if (data.data && data.data.tags) {
-      tags = data.data.tags;
-      console.log(tags);
-      console.log(tags);
+      let tags = data.data.tags;
+      list_colors = new Map(Object.entries(data.data.list_colors));
+      makeChips()
       // try {
       //   // const url = "http://localhost:3000/status";
       //   // const url = "https://pbenzoni.pythonanywhere.com/status";
@@ -228,4 +232,4 @@ async function getStatus() {
     console.error("Error: " + error.message);
   }
 }
-getStatus();
+// getStatus();

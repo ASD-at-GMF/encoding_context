@@ -55,9 +55,17 @@ function findWords(words, instance = new Mark(document)) {
       },
       className: `encon-highlight ${highlightStyles.join(" ")}`,
       each: function (element) {
-        element.style.backgroundColor = highlightColor;
+        let highlight_color =  highlightColor;
+        for (let classification of words.get(element.innerHTML.toLowerCase()).classifications) {
+          if (list_colors.get(classification)) {
+            highlight_color = list_colors.get(classification).highlight;
+            break;
+          }
+        }
 
-        const rgb = hexToRgb(highlightColor);
+        element.style.backgroundColor = highlight_color;
+
+        const rgb = hexToRgb(highlight_color);
         const brightness = calculateBrightness(rgb.r, rgb.g, rgb.b);
         const textColor = brightness > 128 ? "#000000" : "#ffffff";
 
@@ -89,7 +97,7 @@ function findWords(words, instance = new Mark(document)) {
                 .get(word)
                 .classifications.map(
                   (classification) =>
-                    `<span class="classification">${classification}</span>`,
+                    `<span style="background-color: ${list_colors.get(classification)?.highlight}; color: ${list_colors.get(classification)?.text}" class="classification">${classification}</span>`,
                 )
                 .join(" ")
             : ""
@@ -268,12 +276,13 @@ function findWords(words, instance = new Mark(document)) {
 }
 
 let on_var = false;
+let dynamic_var = false;
 // Main function to toggle the word finder
 function main(on) {
   if (on === true) {
     on_var = true;
     findWords(words);
-    observer.observe(targetNode, config);
+    if (dynamic_var) observer.observe(targetNode, config);
   } else {
     on_var = false;
     clearWords();
@@ -293,7 +302,7 @@ const callback = function (mutationsList, observer) {
       }
     }
   }
-  observer.observe(targetNode, config);
+  if (dynamic_var) observer.observe(targetNode, config);
 };
 const observer = new MutationObserver(callback);
 
@@ -341,18 +350,27 @@ function updateHighlightColors(highlightColor) {
     document.head.appendChild(style);
   }
 
-  style.textContent = `
-    mark.encon-highlight {
-      background-color: ${highlightColor} !important;
-      color: ${textColor} !important;
-    }
-  `;
+  // style.textContent = `
+  //   mark.encon-highlight {
+  //     background-color: ${highlightColor} !important;
+  //     color: ${textColor} !important;
+  //   }
+  // `;
 
   // Force refresh of all marks with the new color
   const marks = document.querySelectorAll("mark.encon-highlight");
   marks.forEach((mark) => {
-    mark.style.backgroundColor = highlightColor;
-    mark.style.color = textColor;
+    let flag = true;
+    for (let classification of words.get(mark.innerHTML.toLowerCase()).classifications) {
+      if (list_colors.get(classification)) {
+        flag = false;
+        break;
+      }
+    }
+    if (flag) {
+      mark.style.backgroundColor = highlightColor;
+      mark.style.color = textColor;
+    }
   });
 
   // Store the color in our local options
@@ -383,8 +401,8 @@ function updateLabelColors(labelColor) {
 
   style.textContent = `
     .classification, span.chip {
-      background-color: ${labelColor} !important;
-      color: ${textColor} !important;
+      background-color: ${labelColor};
+      color: ${textColor};
     }
   `;
 
@@ -395,8 +413,10 @@ function updateLabelColors(labelColor) {
   console.log(`Updating ${classificationSpans.length} classification spans`);
 
   classificationSpans.forEach((span) => {
-    span.style.backgroundColor = labelColor;
-    span.style.color = textColor;
+    if (list_colors.get(span.textContent) === undefined) {
+      span.style.backgroundColor = labelColor;
+      span.style.color = textColor;
+    }
   });
 
   // Store the color in our local options
@@ -408,6 +428,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "toggle_word_finder") {
     main(message.on);
     sendResponse("Toggled Word Finder");
+  } else if (message.action === "toggle_dynamic_highlight") {
+    dynamic_var = message.dynamic;
+    if (dynamic_var) {
+      clearWords();
+      findWords(words);
+    }
+    observer.observe(targetNode, config);
+    sendResponse("Toggled Dynamic Highlight");
   } else if (message.action === "update_highlight_color") {
     updateHighlightColors(message.color);
     sendResponse("Updated highlight color");
@@ -500,12 +528,17 @@ function initializeExtension() {
 }
 
 const wordlists = [];
-var words = new Map();
+let words = new Map();
+let list_colors = new Map();
 
 async function initializeData() {
   let host = window.location.host.replace(/^www\./, "");
   const data = await chrome.storage.local.get("data");
   Object.assign(wordlists, data.data.lists);
+
+  list_colors = new Map(Object.entries(data.data.list_colors));
+  console.log(list_colors);
+
   wordlists.forEach((wordlist) => {
     wordlist.terms.forEach((term) => {
       if (words.get(term.term.toLowerCase()) != null) {
@@ -535,7 +568,17 @@ async function initializeData() {
       }
     });
   });
+  main(on_var);
 }
+
+chrome.storage.sync.get("on", function (on) { // Get the current state of the word finder
+  console.log(on.on);
+  on_var = on.on;
+});
+
+chrome.storage.sync.get("dynamic", function (dynamic) { // Get the current state of the word finder
+  dynamic_var = dynamic.dynamic;
+});
 
 // Run initialization
 initializeData();
