@@ -270,7 +270,6 @@ function findWords(words, instance = new Mark(document)) {
 let on_var = false;
 // Main function to toggle the word finder
 function main(on) {
-  // console.log(on);
   if (on === true) {
     on_var = true;
     findWords(words);
@@ -509,16 +508,14 @@ async function initializeData() {
   Object.assign(wordlists, data.data.lists);
   wordlists.forEach((wordlist) => {
     wordlist.terms.forEach((term) => {
-      console.log(words)
       if (words.get(term.term.toLowerCase()) != null) {
-        console.log("Wow");
         words.get(term.term.toLowerCase()).classifications.push(wordlist.listName);
-        words.get(term.term.toLowerCase()).aliases.map((alias) => {
+        if (words.get(term.term.toLowerCase()).aliases) words.get(term.term.toLowerCase()).aliases.map((alias) => {
           if (words.get(alias.toLowerCase()) != null) words.get(alias.toLowerCase()).classifications.push(wordlist.listName);
         });
       } else {
-        if (term.sites == null || term.sites.split(",").includes(host)) {
-          worddata = {};
+        if (term.sites === "" || term.sites.split(",").includes(host)) {
+          let worddata = {};
           worddata.term = term.term;
           worddata.definition = term.short_definition;
           worddata.definition_long = term.long_definition;
@@ -537,7 +534,6 @@ async function initializeData() {
         }
       }
     });
-    console.log(words);
   });
 }
 
