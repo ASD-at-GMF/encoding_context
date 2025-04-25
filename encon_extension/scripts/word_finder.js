@@ -80,28 +80,63 @@ function findWords(words, instance = new Mark(document)) {
   let tooltipMap = new Map();
 
   marks.forEach((mark) => {
-    // For each mark, create a tooltip
-    let word = mark.textContent.trim().toLowerCase();
+    setUpElement(mark, mark.textContent.trim().toLowerCase(), tooltipMap);
+  });
+  const links = document.querySelectorAll('a');
+  links.forEach((link) => {
+    // console.log(link.hostname);
+    if (window.location.hostname !== link.hostname && words.get(link.hostname)) {
+      let small_instance = new Mark(link);
+      // console.log(link.innerText);
+      small_instance.mark(link.innerText, {
+        separateWordSearch: false,
+        className: `encon-highlight ${highlightStyles.join(" ")}`,
+            each: function (element) {
+          let classification = undefined;
+          for (let classification_ of words.get(link.hostname).classifications) {
+            if (list_colors.has(classification_)) {
+              classification = classification_;
+              break;
+            }
+          }
+
+          if (classification) {
+            element.style.backgroundColor = list_colors.get(classification).highlight;
+            element.style.color = list_colors.get(classification).text;
+          } else {
+            element.style.backgroundColor = highlightColor;
+            const rgb = hexToRgb(highlightColor);
+            const brightness = calculateBrightness(rgb.r, rgb.g, rgb.b);
+            element.style.color = brightness > 128 ? "#000000" : "#ffffff";
+          }
+          setUpElement(link, link.hostname, tooltipMap);
+          },
+      });
+    }
+  });
+}
+
+function setUpElement(element, word, tooltipMap) {
     if (!tooltipMap.has(word)) {
       // If the tooltip doesn't exist, create it
       let tooltip = document.createElement("div");
       tooltip.classList.add("tooltiptext");
       tooltip.innerHTML = `
         <strong>${words.get(word)?.term || "None"}</strong><br>`
-        if (words.get(word)?.aliases) tooltip.innerHTML+= `<em>${words.get(word)?.aliases}</em><br>`;
-        tooltip.innerHTML += `
+      if (words.get(word)?.aliases) tooltip.innerHTML+= `<em>${words.get(word)?.aliases}</em><br>`;
+      tooltip.innerHTML += `
         ${words.get(word)?.definition || "No definition found"}<br>
         ${
           words.get(word)?.classifications
-            ? words
-                .get(word)
-                .classifications.map(
-                  (classification) =>
-                    `<span style="background-color: ${list_colors.get(classification)?.highlight}; color: ${list_colors.get(classification)?.text}" class="classification">${classification}</span>`,
-                )
-                .join(" ")
-            : ""
-        }
+              ? words
+                  .get(word)
+                  .classifications.map(
+                      (classification) =>
+                          `<span style="background-color: ${list_colors.get(classification)?.highlight}; color: ${list_colors.get(classification)?.text}" class="classification">${classification}</span>`,
+                  )
+                  .join(" ")
+              : ""
+      }
         <br>
         <button class="open-sidepanel-button">Open Sidepanel</button>
       `;
@@ -131,10 +166,10 @@ function findWords(words, instance = new Mark(document)) {
       tooltip.style.visibility = "visible";
       tooltip.style.opacity = "1";
 
-      const rect = mark.getBoundingClientRect();
+      const rect = element.getBoundingClientRect();
       const tooltipRect = tooltip.getBoundingClientRect();
       let left =
-        rect.left + window.scrollX + (rect.width - tooltipRect.width) / 2;
+          rect.left + window.scrollX + (rect.width - tooltipRect.width) / 2;
       let top = rect.top + window.scrollY - tooltipRect.height - 5;
 
       if (left + tooltipRect.width > window.innerWidth) {
@@ -164,7 +199,7 @@ function findWords(words, instance = new Mark(document)) {
 
     const hideTooltip = () => {
       hideTimer = setTimeout(() => {
-        if (!tooltip.matches(":hover") && !mark.matches(":hover")) {
+        if (!tooltip.matches(":hover") && !element.matches(":hover")) {
           tooltip.style.visibility = "hidden";
           tooltip.style.opacity = "0";
           tooltip.style.transition = "opacity 0.2s ease-in-out";
@@ -176,7 +211,7 @@ function findWords(words, instance = new Mark(document)) {
           document.body.appendChild(tooltip); // Append tooltip to body
 
           const sidePanelButton = tooltip.querySelector(
-            ".open-sidepanel-button",
+              ".open-sidepanel-button",
           );
 
           sidePanelButton.addEventListener("click", function () {
@@ -188,7 +223,7 @@ function findWords(words, instance = new Mark(document)) {
           });
 
           // On click of word open its context in the side_panel
-          mark.addEventListener("click", function () {
+          element.addEventListener("click", function () {
             chrome.runtime.sendMessage({
               action: "open_side_panel",
               word: word,
@@ -197,14 +232,14 @@ function findWords(words, instance = new Mark(document)) {
           });
 
           // Show tooltip and adjust position
-          mark.addEventListener("mouseenter", () => {
+          element.addEventListener("mouseenter", () => {
             tooltip.style.visibility = "visible";
             tooltip.style.opacity = "1";
 
-            const rect = mark.getBoundingClientRect();
+            const rect = element.getBoundingClientRect();
             const tooltipRect = tooltip.getBoundingClientRect();
             let left =
-              rect.left + window.scrollX + (rect.width - tooltipRect.width) / 2;
+                rect.left + window.scrollX + (rect.width - tooltipRect.width) / 2;
             let top = rect.top + window.scrollY - tooltipRect.height - 5; // Above the word
 
             // Prevent tooltip from overflowing screen
@@ -241,9 +276,9 @@ function findWords(words, instance = new Mark(document)) {
           });
 
           // Hide tooltip when the mouse leaves both the word and the tooltip
-          mark.addEventListener("mouseleave", () => {
+          element.addEventListener("mouseleave", () => {
             setTimeout(() => {
-              if (!tooltip.matches(":hover") && !mark.matches(":hover")) {
+              if (!tooltip.matches(":hover") && !element.matches(":hover")) {
                 tooltip.style.visibility = "hidden";
                 tooltip.style.opacity = "0";
               }
@@ -253,26 +288,25 @@ function findWords(words, instance = new Mark(document)) {
       }, 1000);
     };
 
-    mark.addEventListener("mouseenter", showTooltip);
-    mark.addEventListener("mouseleave", hideTooltip);
+    element.addEventListener("mouseenter", showTooltip);
+    element.addEventListener("mouseleave", hideTooltip);
     tooltip.addEventListener("mouseenter", resetHideTimer);
     tooltip.addEventListener("mouseleave", hideTooltip);
 
     tooltip
-      .querySelector(".open-sidepanel-button")
-      .addEventListener("click", function () {
-        chrome.runtime.sendMessage({
-          action: "open_side_panel",
-          word: word,
-          wordDetails: words.get(word),
+        .querySelector(".open-sidepanel-button")
+        .addEventListener("click", function () {
+          chrome.runtime.sendMessage({
+            action: "open_side_panel",
+            word: word,
+            wordDetails: words.get(word),
+          });
         });
-      });
 
-    mark.addEventListener("click", () => {
+    element.addEventListener("click", () => {
       showTooltip();
       hideTooltip();
     });
-  });
 }
 
 let on_var = false;
@@ -537,7 +571,6 @@ async function initializeData() {
   Object.assign(wordlists, data.data.lists);
 
   list_colors = new Map(Object.entries(data.data.list_colors));
-  console.log(list_colors);
 
   wordlists.forEach((wordlist) => {
     wordlist.terms.forEach((term) => {

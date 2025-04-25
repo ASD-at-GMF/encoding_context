@@ -15,7 +15,7 @@
 }
 
 /* Highlight styles */
-mark.encon-highlight {
+mark.encon-highlight, a.encon-highlight {
     /*background-color: var(--highlight-color, #ffecb3) !important;*/
     /*color: var(--highlight-text-color, #000000) !important;*/
     opacity: var(--highlight-opacity, 1);

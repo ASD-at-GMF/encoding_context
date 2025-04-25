@@ -48,18 +48,17 @@ function updateContext(word) {
         `<em>${wordDetails.aliases || ""}</em>`;
     document.body.querySelector("#definition-text").innerText =
       wordDetails.definition;
-    if (wordDetails.definition_long) {
+    let long_definition = wordDetails.definition_long || "";
       try {
         // Convert markdown to HTML using marked
-        const html = marked.parse(wordDetails.definition_long);
+        const html = marked.parse(long_definition);
         document.body.querySelector("#definition-text-long").innerHTML = html;
       } catch (error) {
         console.error("Error converting markdown:", error);
         // Fallback to plain text if conversion fails
         document.body.querySelector("#definition-text-long").innerHTML =
-          wordDetails.definition_long;
+            long_definition;
       }
-    }
     document.body.querySelector("#definition-link").href = wordDetails.adlLink;
 
     // Add a chip for each classification.
