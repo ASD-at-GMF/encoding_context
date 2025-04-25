@@ -1,38 +1,67 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Encoding Context Side Panel</title>
-    <link rel="stylesheet" href="../styles/sidepanel.css" />
-    <link
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Encoding Context Side Panel</title>
+        <link rel="stylesheet" href="../styles/sidepanel.css" />
+        <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:400,500,700"
-    />
-    <script src="../scripts/marked.min.js"></script>
-</head>
-<body>
-<div class="sidepanel-container">
-    <header>
-        <h1>Encoding Context</h1>
-        <hr />
-        <main role="main" aria-live="polite">
-            <p id="select-a-word">Select a word to see its context.</p>
-            <div>
-                <h2 id="definition-word" tabindex="0" aria-label="Selected word"></h2>
-                <p id="definition-text" tabindex="0" aria-label="Word context"></p>
-                <div id="classification-labels-container" aria-label="Classification labels"></div>
-                <p id="definition-text-long" tabindex="0" aria-label="More word context"><strong></strong></p>
-                <p>
-                    More Context
-                    <span aria-hidden="true"> · </span>
-                    <a id= "definition-link" href="https://extremismterms.adl.org/" aria-label="Learn More Link" target="_blank" rel="noreferrer">Learn more</a>
-                </p>
-            </div>
-        </main>
-        <script src="../scripts/words.js"></script>
-        <script src="../scripts/sidepanel.js"></script>
-    </header>
-</div>
-</body>
+        />
+        <script src="../scripts/marked.min.js"></script>
+    </head>
+    <body>
+        <div class="sidepanel-container">
+            <header>
+                <h1>Encoding Context</h1>
+                <hr />
+                <main role="main" aria-live="polite">
+                    <p id="select-a-word">Select a word to see its context.</p>
+                    <div>
+                        <h2
+                            id="definition-word"
+                            tabindex="0"
+                            aria-label="Selected word"
+                        ></h2>
+                        <p
+                            id="definition-aliases"
+                            tabindex="0"
+                            aria-label="Word Aliases"
+                        ></p>
+                        <p
+                            id="definition-text"
+                            tabindex="0"
+                            aria-label="Word context"
+                        ></p>
+                        <div
+                            id="classification-labels-container"
+                            aria-label="Classification labels"
+                        ></div>
+                        <p
+                            id="definition-text-long"
+                            tabindex="0"
+                            aria-label="More word context"
+                        >
+                            <strong></strong>
+                        </p>
+                        <p>
+                            More Context
+                            <span aria-hidden="true"> · </span>
+                            <a
+                                id="definition-link"
+                                href="https://extremismterms.adl.org/"
+                                aria-label="Learn More Link"
+                                target="_blank"
+                                rel="noreferrer"
+                                >Learn more</a
+                            >
+                        </p>
+                    </div>
+                </main>
+                <script src="../scripts/words.js"></script>
+                <script src="../scripts/sidepanel.js"></script>
+            </header>
+        </div>
+    </body>
 </html>
