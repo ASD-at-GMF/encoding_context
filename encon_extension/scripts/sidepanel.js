@@ -1,8 +1,10 @@
-chrome.storage.session.get("lastWord", ({ lastWord }) => { // Get the last word from storage
+chrome.storage.session.get("lastWord", ({ lastWord }) => {
+  // Get the last word from storage
   updateContext(lastWord);
 });
 
-chrome.storage.session.onChanged.addListener((changes) => { // Listen for changes in storage
+chrome.storage.session.onChanged.addListener((changes) => {
+  // Listen for changes in storage
   const lastWordChange = changes["lastWord"];
 
   if (!lastWordChange) {
@@ -20,21 +22,32 @@ function updateContext(word) {
 
   document.body.querySelector("#select-a-word").style.display = "none"; // Hide instructions.
 
-  chrome.storage.session.get("wordDetails", ({ wordDetails }) => { // Get the word details from storage
+  chrome.storage.session.get("wordDetails", ({ wordDetails }) => {
+    // Get the word details from storage
     console.log("Word details in sidepanel:", wordDetails);
     console.log("Long definition:", wordDetails?.definition_long);
-    if (!wordDetails) { // If there are no word details, give default message and return
+    if (!wordDetails) {
+      // If there are no word details, give default message and return
       document.body.querySelector("#definition-word").innerText = word;
-      document.body.querySelector("#definition-text").innerText = "Unknown word!";
+      document.body.querySelector("#definition-aliases").innerText = "";
+      document.body.querySelector("#definition-text").innerText =
+        "Unknown word!";
       document.body.querySelector("#definition-text-long").innerHTML = "";
-      document.body.querySelector("#classification-labels-container").innerHTML = "";
-      document.body.querySelector("#definition-link").href = "https://extremismterms.adl.org/";
+      document.body.querySelector(
+        "#classification-labels-container",
+      ).innerHTML = "";
+      document.body.querySelector("#definition-link").href =
+        "https://extremismterms.adl.org/";
       return;
     }
 
     // Show word, definition, link, and classification chips.
-    document.body.querySelector("#definition-word").innerText = word;
-    document.body.querySelector("#definition-text").innerText = wordDetails.definition;
+    document.body.querySelector("#definition-word").innerText = wordDetails.term || word;
+    if (wordDetails.aliases)
+      document.body.querySelector("#definition-aliases").innerHTML =
+        `<em>${wordDetails.aliases || ""}</em>`;
+    document.body.querySelector("#definition-text").innerText =
+      wordDetails.definition;
     if (wordDetails.definition_long) {
       try {
         // Convert markdown to HTML using marked
@@ -43,26 +56,27 @@ function updateContext(word) {
       } catch (error) {
         console.error("Error converting markdown:", error);
         // Fallback to plain text if conversion fails
-        document.body.querySelector("#definition-text-long").innerHTML = wordDetails.definition_long;
+        document.body.querySelector("#definition-text-long").innerHTML =
+          wordDetails.definition_long;
       }
     }
     document.body.querySelector("#definition-link").href = wordDetails.adlLink;
 
     // Add a chip for each classification.
     const classificationLabelsContainer = document.body.querySelector(
-      "#classification-labels-container"
+      "#classification-labels-container",
     );
-    
+
     // Get the label color from options
-    chrome.storage.sync.get("options", function(data) {
+    chrome.storage.sync.get("options", function (data) {
       const labelColor = data.options?.label_color || "#ff6c6c";
       // Calculate contrast text color
       const textColor = getContrastTextColor(labelColor);
-      
+
       classificationLabelsContainer.innerHTML = wordDetails.classifications // Add a chip for each classification
         .map(
           (classification) =>
-            `<span class="chip" role="tag" style="background-color: ${labelColor}; color: ${textColor};" aria-label="Classified as ${classification}">${classification}</span>`
+            `<span class="chip" role="tag" style="background-color: ${labelColor}; color: ${textColor};" aria-label="Classified as ${classification}">${classification}</span>`,
         )
         .join("");
     });
@@ -71,11 +85,10 @@ function updateContext(word) {
 
 // Function to determine best text color based on background color
 function getContrastTextColor(hexColor) {
-  const hex = hexColor.replace('#', '');
+  const hex = hexColor.replace("#", "");
   const r = parseInt(hex.substr(0, 2), 16);
   const g = parseInt(hex.substr(2, 2), 16);
   const b = parseInt(hex.substr(4, 2), 16);
   const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-  return brightness > 128 ? '#000000' : '#ffffff';
+  return brightness > 128 ? "#000000" : "#ffffff";
 }
-
