@@ -230,60 +230,6 @@ function setUpElement(element, word, tooltipMap) {
               wordDetails: words.get(word),
             });
           });
-
-          // Show tooltip and adjust position
-          element.addEventListener("mouseenter", () => {
-            tooltip.style.visibility = "visible";
-            tooltip.style.opacity = "1";
-
-            const rect = element.getBoundingClientRect();
-            const tooltipRect = tooltip.getBoundingClientRect();
-            let left =
-                rect.left + window.scrollX + (rect.width - tooltipRect.width) / 2;
-            let top = rect.top + window.scrollY - tooltipRect.height - 5; // Above the word
-
-            // Prevent tooltip from overflowing screen
-            if (left + tooltipRect.width > window.innerWidth) {
-              left = window.innerWidth - tooltipRect.width - 10;
-            }
-            if (left < 0) {
-              left = 10;
-            }
-            if (top < 0) {
-              top = rect.bottom + window.scrollY + 5; // Move below the word
-              tooltip.classList.add("below");
-            } else {
-              tooltip.classList.remove("below");
-            }
-
-            tooltip.style.left = `${left}px`;
-            tooltip.style.top = `${top}px`;
-          });
-
-          // Allow clicking on the tooltip to open the side panel - not sure why not working
-          tooltip.addEventListener("click", function () {
-            chrome.runtime.sendMessage({
-              action: "open_side_panel",
-              word: word,
-              wordDetails: words.get(word),
-            });
-          });
-
-          // Prevent tooltip from disappearing when hovering over it
-          tooltip.addEventListener("mouseenter", () => {
-            tooltip.style.visibility = "visible";
-            tooltip.style.opacity = "1";
-          });
-
-          // Hide tooltip when the mouse leaves both the word and the tooltip
-          element.addEventListener("mouseleave", () => {
-            setTimeout(() => {
-              if (!tooltip.matches(":hover") && !element.matches(":hover")) {
-                tooltip.style.visibility = "hidden";
-                tooltip.style.opacity = "0";
-              }
-            }, 1000); // Small delay to allow hovering to the tooltip
-          });
         }
       }, 1000);
     };
