@@ -509,10 +509,12 @@ async function initializeData() {
   Object.assign(wordlists, data.data.lists);
   wordlists.forEach((wordlist) => {
     wordlist.terms.forEach((term) => {
-      if (words[term.term.toLowerCase()]) {
-        words[term.term.toLowerCase()].classifications.push(wordlist.listName);
-        words[term.term.toLowerCase()].aliases.map((alias) => {
-          words[alias.toLowerCase()].classifications.push(wordlist.listName);
+      console.log(words)
+      if (words.get(term.term.toLowerCase()) != null) {
+        console.log("Wow");
+        words.get(term.term.toLowerCase()).classifications.push(wordlist.listName);
+        words.get(term.term.toLowerCase()).aliases.map((alias) => {
+          if (words.get(alias.toLowerCase()) != null) words.get(alias.toLowerCase()).classifications.push(wordlist.listName);
         });
       } else {
         if (term.sites == null || term.sites.split(",").includes(host)) {
@@ -535,8 +537,8 @@ async function initializeData() {
         }
       }
     });
+    console.log(words);
   });
-  console.log(words);
 }
 
 // Run initialization
