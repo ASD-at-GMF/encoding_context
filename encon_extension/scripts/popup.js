@@ -15,7 +15,13 @@ document.querySelector("#toggle-checkbox").addEventListener("click", function ()
     chrome.runtime.sendMessage({
       action: "toggle_word_finder",
     });
+});
+
+document.querySelector("#dynamic-toggle").addEventListener("click", function () {
+  chrome.runtime.sendMessage({
+    action: "toggle_dynamic_highlight",
   });
+});
 
 // to receive messages from service worker script
 chrome.runtime.onMessage.addListener((message, sender) => {
@@ -28,4 +34,8 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 
 chrome.storage.sync.get("on", function (on) { // Get the current state of the word finder
   document.querySelector("#toggle-checkbox").checked = on.on;
+});
+
+chrome.storage.sync.get("dynamic", function (dynamic) { // Get the current state of the word finder
+  document.querySelector("#dynamic-toggle").checked = dynamic.dynamic;
 });

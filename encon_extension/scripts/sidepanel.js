@@ -48,18 +48,17 @@ function updateContext(word) {
         `<em>${wordDetails.aliases || ""}</em>`;
     document.body.querySelector("#definition-text").innerText =
       wordDetails.definition;
-    if (wordDetails.definition_long) {
+    let long_definition = wordDetails.definition_long || "";
       try {
         // Convert markdown to HTML using marked
-        const html = marked.parse(wordDetails.definition_long);
+        const html = marked.parse(long_definition);
         document.body.querySelector("#definition-text-long").innerHTML = html;
       } catch (error) {
         console.error("Error converting markdown:", error);
         // Fallback to plain text if conversion fails
         document.body.querySelector("#definition-text-long").innerHTML =
-          wordDetails.definition_long;
+            long_definition;
       }
-    }
     document.body.querySelector("#definition-link").href = wordDetails.adlLink;
 
     // Add a chip for each classification.
@@ -76,12 +75,20 @@ function updateContext(word) {
       classificationLabelsContainer.innerHTML = wordDetails.classifications // Add a chip for each classification
         .map(
           (classification) =>
-            `<span class="chip" role="tag" style="background-color: ${labelColor}; color: ${textColor};" aria-label="Classified as ${classification}">${classification}</span>`,
+            `<span class="chip" role="tag" style="background-color: ${list_colors.get(classification)?.highlight || labelColor}; color: ${list_colors.get(classification)?.text || textColor};" aria-label="Classified as ${classification}">${classification}</span>`,
         )
         .join("");
     });
   });
 }
+
+async function get_colors() {
+  const data = await chrome.storage.local.get("data") ;
+  list_colors = new Map(Object.entries(data.data.list_colors));
+}
+get_colors();
+
+let list_colors = new Map();
 
 // Function to determine best text color based on background color
 function getContrastTextColor(hexColor) {
