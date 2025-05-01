@@ -36,13 +36,36 @@ function findWords(words, instance = new Mark(document)) {
       separateWordSearch: false,
       accuracy: {
         value: "exactly",
-        limiters: ["@", ",", ".", "!", "?", " ", "\n", "\t", "(", ")", "[", "]", "{", "}"]
+        limiters: [
+          "@",
+          ",",
+          ".",
+          "!",
+          "?",
+          " ",
+          "\n",
+          "\t",
+          "(",
+          ")",
+          "[",
+          "]",
+          "{",
+          "}",
+        ],
       },
       className: `encon-highlight ${highlightStyles.join(" ")}`,
       each: function (element) {
-        element.style.backgroundColor = highlightColor;
+        let highlight_color =  highlightColor;
+        for (let classification of words.get(element.innerHTML.toLowerCase()).classifications) {
+          if (list_colors.get(classification)) {
+            highlight_color = list_colors.get(classification).highlight;
+            break;
+          }
+        }
 
-        const rgb = hexToRgb(highlightColor);
+        element.style.backgroundColor = highlight_color;
+
+        const rgb = hexToRgb(highlight_color);
         const brightness = calculateBrightness(rgb.r, rgb.g, rgb.b);
         const textColor = brightness > 128 ? "#000000" : "#ffffff";
 
@@ -57,15 +80,51 @@ function findWords(words, instance = new Mark(document)) {
   let tooltipMap = new Map();
 
   marks.forEach((mark) => {
-    // For each mark, create a tooltip
-    let word = mark.textContent.trim().toLowerCase();
+    setUpElement(mark, mark.textContent.trim().toLowerCase(), tooltipMap);
+  });
+  const links = document.querySelectorAll('a');
+  links.forEach((link) => {
+    // console.log(link.hostname);
+    if (window.location.hostname !== link.hostname && words.get(link.hostname)) {
+      let small_instance = new Mark(link);
+      // console.log(link.innerText);
+      small_instance.mark(link.innerText, {
+        separateWordSearch: false,
+        className: `encon-highlight ${highlightStyles.join(" ")}`,
+            each: function (element) {
+          let classification = undefined;
+          for (let classification_ of words.get(link.hostname).classifications) {
+            if (list_colors.has(classification_)) {
+              classification = classification_;
+              break;
+            }
+          }
 
+          if (classification) {
+            element.style.backgroundColor = list_colors.get(classification).highlight;
+            element.style.color = list_colors.get(classification).text;
+          } else {
+            element.style.backgroundColor = highlightColor;
+            const rgb = hexToRgb(highlightColor);
+            const brightness = calculateBrightness(rgb.r, rgb.g, rgb.b);
+            element.style.color = brightness > 128 ? "#000000" : "#ffffff";
+          }
+          setUpElement(link, link.hostname, tooltipMap);
+          },
+      });
+    }
+  });
+}
+
+function setUpElement(element, word, tooltipMap) {
     if (!tooltipMap.has(word)) {
       // If the tooltip doesn't exist, create it
       let tooltip = document.createElement("div");
       tooltip.classList.add("tooltiptext");
       tooltip.innerHTML = `
-        <strong>${word}</strong><br>
+        <strong>${words.get(word)?.term || "None"}</strong><br>`
+      if (words.get(word)?.aliases) tooltip.innerHTML+= `<em>${words.get(word)?.aliases}</em><br>`;
+      tooltip.innerHTML += `
         ${words.get(word)?.definition || "No definition found"}<br>
         ${
           words.get(word)?.classifications
@@ -73,7 +132,7 @@ function findWords(words, instance = new Mark(document)) {
                   .get(word)
                   .classifications.map(
                       (classification) =>
-                          `<span class="classification">${classification}</span>`,
+                          `<span style="background-color: ${list_colors.get(classification)?.highlight}; color: ${list_colors.get(classification)?.text}" class="classification">${classification}</span>`,
                   )
                   .join(" ")
               : ""
@@ -107,7 +166,7 @@ function findWords(words, instance = new Mark(document)) {
       tooltip.style.visibility = "visible";
       tooltip.style.opacity = "1";
 
-      const rect = mark.getBoundingClientRect();
+      const rect = element.getBoundingClientRect();
       const tooltipRect = tooltip.getBoundingClientRect();
       let left =
           rect.left + window.scrollX + (rect.width - tooltipRect.width) / 2;
@@ -140,7 +199,7 @@ function findWords(words, instance = new Mark(document)) {
 
     const hideTooltip = () => {
       hideTimer = setTimeout(() => {
-        if (!tooltip.matches(":hover") && !mark.matches(":hover")) {
+        if (!tooltip.matches(":hover") && !element.matches(":hover")) {
           tooltip.style.visibility = "hidden";
           tooltip.style.opacity = "0";
           tooltip.style.transition = "opacity 0.2s ease-in-out";
@@ -151,9 +210,11 @@ function findWords(words, instance = new Mark(document)) {
 
           document.body.appendChild(tooltip); // Append tooltip to body
 
-          const sidePanelButton = tooltip.querySelector('.open-sidepanel-button');
+          const sidePanelButton = tooltip.querySelector(
+              ".open-sidepanel-button",
+          );
 
-          sidePanelButton.addEventListener('click', function () {
+          sidePanelButton.addEventListener("click", function () {
             chrome.runtime.sendMessage({
               action: "open_side_panel",
               word: word,
@@ -162,75 +223,19 @@ function findWords(words, instance = new Mark(document)) {
           });
 
           // On click of word open its context in the side_panel
-          mark.addEventListener("click", function () {
+          element.addEventListener("click", function () {
             chrome.runtime.sendMessage({
               action: "open_side_panel",
               word: word,
               wordDetails: words.get(word),
             });
-          });
-
-          // Show tooltip and adjust position
-          mark.addEventListener("mouseenter", () => {
-            tooltip.style.visibility = "visible";
-            tooltip.style.opacity = "1";
-
-            const rect = mark.getBoundingClientRect();
-            const tooltipRect = tooltip.getBoundingClientRect();
-            let left =
-                rect.left + window.scrollX + (rect.width - tooltipRect.width) / 2;
-            let top = rect.top + window.scrollY - tooltipRect.height - 5; // Above the word
-
-            // Prevent tooltip from overflowing screen
-            if (left + tooltipRect.width > window.innerWidth) {
-              left = window.innerWidth - tooltipRect.width - 10;
-            }
-            if (left < 0) {
-              left = 10;
-            }
-            if (top < 0) {
-              top = rect.bottom + window.scrollY + 5; // Move below the word
-              tooltip.classList.add("below");
-            } else {
-              tooltip.classList.remove("below");
-            }
-
-            tooltip.style.left = `${left}px`;
-            tooltip.style.top = `${top}px`;
-          });
-
-          // Allow clicking on the tooltip to open the side panel - not sure why not working
-          tooltip.addEventListener("click", function () {
-            chrome.runtime.sendMessage({
-              action: "open_side_panel",
-              word: word,
-              wordDetails: words.get(word),
-            });
-          });
-
-
-          // Prevent tooltip from disappearing when hovering over it
-          tooltip.addEventListener("mouseenter", () => {
-            tooltip.style.visibility = "visible";
-            tooltip.style.opacity = "1";
-          });
-
-
-          // Hide tooltip when the mouse leaves both the word and the tooltip
-          mark.addEventListener("mouseleave", () => {
-            setTimeout(() => {
-              if (!tooltip.matches(":hover") && !mark.matches(":hover")) {
-                tooltip.style.visibility = "hidden";
-                tooltip.style.opacity = "0";
-              }
-            }, 1000); // Small delay to allow hovering to the tooltip
           });
         }
       }, 1000);
     };
 
-    mark.addEventListener("mouseenter", showTooltip);
-    mark.addEventListener("mouseleave", hideTooltip);
+    element.addEventListener("mouseenter", showTooltip);
+    element.addEventListener("mouseleave", hideTooltip);
     tooltip.addEventListener("mouseenter", resetHideTimer);
     tooltip.addEventListener("mouseleave", hideTooltip);
 
@@ -244,21 +249,20 @@ function findWords(words, instance = new Mark(document)) {
           });
         });
 
-    mark.addEventListener("click", () => {
+    element.addEventListener("click", () => {
       showTooltip();
       hideTooltip();
     });
-  });
 }
 
 let on_var = false;
+let dynamic_var = false;
 // Main function to toggle the word finder
 function main(on) {
-  // console.log(on);
   if (on === true) {
     on_var = true;
     findWords(words);
-    observer.observe(targetNode, config);
+    if (dynamic_var) observer.observe(targetNode, config);
   } else {
     on_var = false;
     clearWords();
@@ -267,8 +271,8 @@ function main(on) {
   return true;
 }
 const targetNode = document;
-const config = { subtree: true, childList: true};
-const callback = function(mutationsList, observer) {
+const config = { subtree: true, childList: true };
+const callback = function (mutationsList, observer) {
   observer.disconnect();
   for (const mutation of mutationsList) {
     for (const node of mutation.addedNodes) {
@@ -278,7 +282,7 @@ const callback = function(mutationsList, observer) {
       }
     }
   }
-  observer.observe(targetNode, config);
+  if (dynamic_var) observer.observe(targetNode, config);
 };
 const observer = new MutationObserver(callback);
 
@@ -286,12 +290,12 @@ const observer = new MutationObserver(callback);
 function hexToRgb(hex) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); // regex to match hex color
   return result
-      ? {
+    ? {
         r: parseInt(result[1], 16),
         g: parseInt(result[2], 16),
         b: parseInt(result[3], 16),
       }
-      : null;
+    : null;
 }
 
 // Helper function to calculate color brightness
@@ -310,12 +314,12 @@ function updateHighlightColors(highlightColor) {
   const textColor = brightness > 128 ? "#000000" : "#ffffff";
 
   document.documentElement.style.setProperty(
-      "--highlight-color",
-      highlightColor,
+    "--highlight-color",
+    highlightColor,
   ); // Create CSS variable style
   document.documentElement.style.setProperty(
-      "--highlight-text-color",
-      textColor,
+    "--highlight-text-color",
+    textColor,
   );
 
   // Create or update a stylesheet with the new colors
@@ -326,18 +330,27 @@ function updateHighlightColors(highlightColor) {
     document.head.appendChild(style);
   }
 
-  style.textContent = `
-    mark.encon-highlight {
-      background-color: ${highlightColor} !important;
-      color: ${textColor} !important;
-    }
-  `;
+  // style.textContent = `
+  //   mark.encon-highlight {
+  //     background-color: ${highlightColor} !important;
+  //     color: ${textColor} !important;
+  //   }
+  // `;
 
   // Force refresh of all marks with the new color
   const marks = document.querySelectorAll("mark.encon-highlight");
   marks.forEach((mark) => {
-    mark.style.backgroundColor = highlightColor;
-    mark.style.color = textColor;
+    let flag = true;
+    for (let classification of words.get(mark.innerHTML.toLowerCase()).classifications) {
+      if (list_colors.get(classification)) {
+        flag = false;
+        break;
+      }
+    }
+    if (flag) {
+      mark.style.backgroundColor = highlightColor;
+      mark.style.color = textColor;
+    }
   });
 
   // Store the color in our local options
@@ -368,20 +381,22 @@ function updateLabelColors(labelColor) {
 
   style.textContent = `
     .classification, span.chip {
-      background-color: ${labelColor} !important;
-      color: ${textColor} !important;
+      background-color: ${labelColor};
+      color: ${textColor};
     }
   `;
 
   // Update existing classification spans
   const classificationSpans = document.querySelectorAll(
-      ".classification, span.chip",
+    ".classification, span.chip",
   );
   console.log(`Updating ${classificationSpans.length} classification spans`);
 
   classificationSpans.forEach((span) => {
-    span.style.backgroundColor = labelColor;
-    span.style.color = textColor;
+    if (list_colors.get(span.textContent) === undefined) {
+      span.style.backgroundColor = labelColor;
+      span.style.color = textColor;
+    }
   });
 
   // Store the color in our local options
@@ -393,6 +408,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "toggle_word_finder") {
     main(message.on);
     sendResponse("Toggled Word Finder");
+  } else if (message.action === "toggle_dynamic_highlight") {
+    dynamic_var = message.dynamic;
+    if (dynamic_var) {
+      clearWords();
+      findWords(words);
+    }
+    observer.observe(targetNode, config);
+    sendResponse("Toggled Dynamic Highlight");
   } else if (message.action === "update_highlight_color") {
     updateHighlightColors(message.color);
     sendResponse("Updated highlight color");
@@ -405,13 +428,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // Initialize color scheme listener
 window
-    .matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change", () => {
-      // Use our cached options instead of retrieving from storage again
-      if (extensionOptions.hightlight_color) {
-        updateHighlightColors(extensionOptions.hightlight_color);
-      }
-    });
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", () => {
+    // Use our cached options instead of retrieving from storage again
+    if (extensionOptions.hightlight_color) {
+      updateHighlightColors(extensionOptions.hightlight_color);
+    }
+  });
 
 // Main listener for option changes
 chrome.storage.onChanged.addListener((changes, namespace) => {
@@ -432,16 +455,16 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 
       // Update highlight color if it's changed
       if (
-          newOptions.hightlight_color &&
-          newOptions.hightlight_color !== extensionOptions.hightlight_color
+        newOptions.hightlight_color &&
+        newOptions.hightlight_color !== extensionOptions.hightlight_color
       ) {
         updateHighlightColors(newOptions.hightlight_color);
       }
 
       // Update label color if it's changed
       if (
-          newOptions.label_color &&
-          newOptions.label_color !== extensionOptions.label_color
+        newOptions.label_color &&
+        newOptions.label_color !== extensionOptions.label_color
       ) {
         updateLabelColors(newOptions.label_color);
       }
@@ -485,25 +508,56 @@ function initializeExtension() {
 }
 
 const wordlists = [];
-var words = new Map();
+let words = new Map();
+let list_colors = new Map();
 
 async function initializeData() {
-  let host = window.location.host.replace(/^www\./,'')
+  let host = window.location.host.replace(/^www\./, "");
   const data = await chrome.storage.local.get("data");
   Object.assign(wordlists, data.data.lists);
+
+  list_colors = new Map(Object.entries(data.data.list_colors));
+
   wordlists.forEach((wordlist) => {
     wordlist.terms.forEach((term) => {
-      if (term.sites == null || term.sites.split(",").includes(host)) {
-        worddata = {};
-        worddata.definition = term.short_definition;
-        worddata.definition_long = term.long_definition;
-        worddata.classifications = [wordlist.listName];
-        worddata.adlLink = term.wiki_link;
-        words.set(term.term, worddata);
+      if (words.get(term.term.toLowerCase()) != null) {
+        words.get(term.term.toLowerCase()).classifications.push(wordlist.listName);
+        if (words.get(term.term.toLowerCase()).aliases) words.get(term.term.toLowerCase()).aliases.map((alias) => {
+          if (words.get(alias.toLowerCase()) != null) words.get(alias.toLowerCase()).classifications.push(wordlist.listName);
+        });
+      } else {
+        if (term.sites === "" || term.sites.split(",").includes(host)) {
+          let worddata = {};
+          worddata.term = term.term;
+          worddata.definition = term.short_definition;
+          worddata.definition_long = term.long_definition;
+          worddata.classifications = [wordlist.listName];
+          worddata.adlLink = term.wiki_link;
+          if (term.aliases !== "")  worddata.aliases = term.aliases.toLowerCase().split();
+          words.set(term.term.toLowerCase(), worddata);
+          if (term.aliases != null || term.aliases !== "") {
+            term.aliases
+              .toLowerCase()
+              .split(",")
+              .map((alias) => {
+                if (alias !== "") words.set(alias.trim(), worddata);
+              });
+          }
+        }
       }
     });
   });
+  main(on_var);
 }
+
+chrome.storage.sync.get("on", function (on) { // Get the current state of the word finder
+  console.log(on.on);
+  on_var = on.on;
+});
+
+chrome.storage.sync.get("dynamic", function (dynamic) { // Get the current state of the word finder
+  dynamic_var = dynamic.dynamic;
+});
 
 // Run initialization
 initializeData();
