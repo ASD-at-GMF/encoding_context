@@ -228,4 +228,3 @@ async function getStatus() {
     console.error("Error: " + error.message);
   }
 }
-// getStatus();
