@@ -179,16 +179,6 @@ async function fillTagSelect(selectedTags) {
       let tags = data.data.tags;
       list_colors = new Map(Object.entries(data.data.list_colors));
       makeChips();
-      // try {
-      //   // const url = "http://localhost:3000/status";
-      //   // const url = "https://pbenzoni.pythonanywhere.com/status";
-      //   const url = "https://context.tools/tags";
-      //   const response = await fetch(url);
-      //   if (!response.ok) {
-      //     throw new Error(`Response status: ${response.status}`);
-      //   }
-      //   const json = await response.json();
-      //   console.log(json);
       tagSelect = document.getElementById("tag-select");
       tags.forEach((tag) => {
         //Loop through all tags in the json response
@@ -227,8 +217,6 @@ document.getElementById("save").addEventListener("click", saveOptions); //Save o
 async function getStatus() {
   //Check if the server is running
   try {
-    // const url = "http://localhost:3000/status";
-    // const url = "https://pbenzoni.pythonanywhere.com/status";
     const url = "https://context.tools/status";
     const response = await fetch(url);
     if (!response.ok) {

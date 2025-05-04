@@ -348,13 +348,6 @@ function updateHighlightColors(highlightColor) {
     document.head.appendChild(style);
   }
 
-  // style.textContent = `
-  //   mark.encon-highlight {
-  //     background-color: ${highlightColor} !important;
-  //     color: ${textColor} !important;
-  //   }
-  // `;
-
   // Force refresh of all marks with the new color
   const marks = document.querySelectorAll("mark.encon-highlight");
   marks.forEach((mark) => {
