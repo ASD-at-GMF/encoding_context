@@ -5,19 +5,34 @@ from words import TermList, Term, TermLists
 
 
 class Database:
+
+    # Initialize the database, and the connection to it
     def __init__(self):
         self.con = sqlite3.connect("/home/pbenzoni/context/context.db")
         self.cur = self.con.cursor()
         self.cur.execute("CREATE TABLE if not exists terms(id INTEGER PRIMARY KEY AUTOINCREMENT, list_id INTEGER, term TEXT, short_definition TEXT, long_definition TEXT, wiki_link TEXT, sites TEXT, aliases TEXT, regex_pattern TEXT, additional_info TEXT)")
         self.con.commit()
-        self.cur.execute("CREATE TABLE if not exists lists(id INTEGER PRIMARY KEY AUTOINCREMENT, list_name TEXT, tags TEXT)")
+        self.cur.execute("CREATE TABLE if not exists lists(id INTEGER PRIMARY KEY AUTOINCREMENT, list_name TEXT, description TEXT, color TEXT, tags TEXT)")
         self.con.commit()
+
     ' WARNING '
+    # Drop the whole database
     def delete(self):
         self.cur.execute("DROP TABLE if exists terms")
+        self.con.commit()
         self.cur.execute("DROP TABLE if exists lists")
+        self.con.commit()
         # self.cur.execute("DROP TABLE if exists map")
 
+    # Same as init, run after dropping the database
+    def reinit(self):
+        self.delete()
+        self.cur.execute("CREATE TABLE if not exists terms(id INTEGER PRIMARY KEY AUTOINCREMENT, list_id INTEGER, term TEXT, short_definition TEXT, long_definition TEXT, wiki_link TEXT, sites TEXT, aliases TEXT, regex_pattern TEXT, additional_info TEXT)")
+        self.con.commit()
+        self.cur.execute("CREATE TABLE if not exists lists(id INTEGER PRIMARY KEY AUTOINCREMENT, list_name TEXT, description TEXT, color TEXT, tags TEXT)")
+        self.con.commit()
+
+    # Add a specific term
     def add_term(self, term, list_name):
         res = self.cur.execute("SELECT id FROM lists WHERE list_name = ?", (list_name,))
         ids = res.fetchone()
@@ -27,15 +42,18 @@ class Database:
         self.cur.execute("INSERT INTO terms (list_id, term, short_definition, long_definition, wiki_link, aliases, regex_pattern, additional_info) VALUES(?, ?, ?, ?, ?, ?, ?, ?)", data)
         self.con.commit()
 
+    # Add a single List
     def add_list(self, termlist):
-        self.cur.execute("INSERT INTO lists (list_name, tags) VALUES(?, ?)", (termlist.list_name, termlist.tags,))
+        self.cur.execute("INSERT INTO lists (list_name, description, color, tags) VALUES(?, ?)", (termlist.list_name, termlist.description, termlist.color, termlist.tags,))
         self.con.commit()
 
+    # Remove a single Term
     def remove_term(self, term):
         res = self.cur.execute("SELECT id FROM terms WHERE term = ?", (term,))
         term_id = res.fetchone()[0]
         self.cur.execute("DELETE FROM terms WHERE term_id = ?", (term_id,))
 
+    # Remove a single list
     def remove_list(self, list_name):
         res = self.cur.execute("SELECT id FROM lists WHERE list_name = ?", (list_name,))
         list_id = res.fetchone()[0]
@@ -43,12 +61,15 @@ class Database:
         self.cur.execute("DELETE FROM lists WHERE id = ?", (list_id,))
         self.con.commit()
 
+    # Get a list and all of its words; used by main word list API
     def get_list(self, termlist):
         res = self.cur.execute("SELECT * FROM lists WHERE list_name = ?", (termlist.list_name,))
         termlistinfo = res.fetchone()
         if (termlistinfo):
             termlist.id = termlistinfo[0]
-            termlist.tags = termlistinfo[2]
+            termlist.description = termlistinfo[2]
+            termlist.color = termlistinfo[3]
+            termlist.tags = termlistinfo[4]
             list_id = termlistinfo[0]
             res = self.cur.execute("SELECT * FROM terms WHERE list_id = ?", (list_id,))
             terms = res.fetchall()
@@ -58,11 +79,15 @@ class Database:
                 termlist.addTerm(new_term)
         else:
             print("No List Found")
+
+    # Get all the lists, and their words; calls get list
     def get_lists(self, termlists):
         for list_name in termlists.list_names:
             termlist = TermList(list_name)
             self.get_list(termlist)
             termlists.addList(termlist)
+
+    # Get only all of the list names, also needed for main API call
     def get_all_list_names(self):
         list_names = []
         res = self.cur.execute("SELECT list_name FROM lists", ())
@@ -71,15 +96,28 @@ class Database:
             list_names.append(name[0])
         return list_names
 
+    # Get the list names and their colors, for newer main API call
+    def get_all_list_names_and_colors(self):
+        list_names = []
+        colors = []
+        res = self.cur.execute("SELECT list_name, color FROM lists", ())
+        names = res.fetchall()
+        for name in names:
+            list_names.append(name[0])
+            colors.append(name[1])
+        return (list_names, colors)
+
+    # Update the database lists based on a basic Airtable csv
     def get_categories_from_csv(self):
-        dfc = pd.read_csv("/home/pbenzoni/context/Categories.csv", usecols=["Category Name", "Description"], index_col="Category Name")
+        dfc = pd.read_csv("/home/pbenzoni/context/Categories.csv", usecols=["Category Name", "Description", "Color"], index_col="Category Name")
         dfc = dfc.iloc[1:, :]
         print(dfc)
         categories = list(dfc.itertuples(name=None))
         print(categories)
-        self.cur.executemany("INSERT INTO lists (list_name, tags) VALUES(?, ?)", categories)
+        self.cur.executemany("INSERT INTO lists (list_name, description, colors) VALUES(?, ?, ?)", categories)
         self.con.commit()
 
+    # Update the database terms based on a basic Airtable csv
     def get_terms_from_csv(self):
         df = pd.read_csv("/home/pbenzoni/context/Words.csv", usecols=["Term", "Short Definition", "Long Definition", "Link", "Sites", "Aliases", "Category"], index_col="Term")
         df = df.iloc[1:, :]
@@ -100,11 +138,26 @@ class Database:
         # self.cur.executemany("INSERT INTO lists (list_name, tags) VALUES(?, ?)", categories)
         # self.con.commit()
 
+    # Similar to getting from csv, but gets a list instead from update.py
+    def get_categories_from_list(self, categories):
+        self.cur.executemany("INSERT INTO lists (list_name, description, color) VALUES(?, ?, ?)", categories)
+        self.con.commit()
+        res = self.cur.execute("SELECT id, list_name FROM lists", ())
+        list_names = res.fetchall()
+        list_dict = dict()
+        for name in list_names:
+            list_dict[name[1]] = name[0]
+        return list_dict
 
+    # Similar to getting from csv, but gets a list instead from update.py
+    def get_terms_from_list(self, terms):
+        self.cur.executemany("INSERT INTO terms (list_id, term, short_definition, long_definition, sites, aliases, wiki_link) VALUES(?, ?, ?, ?, ?, ?, ?)", terms)
+        self.con.commit()
 
+# Below is testing code, keeping it here for now, but not needed for chrome extension function
 
-db = Database()
-db.get_terms_from_csv()
+# db = Database()
+# db.get_terms_from_csv()
 
 # db.delete()
 # termlist = TermList("Test")

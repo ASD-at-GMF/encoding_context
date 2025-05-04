@@ -13,12 +13,19 @@
   "options_ui": { "page": "pages/options.html", "open_in_tab": true },
   "icons": {
     "128": "images/icon-128.png",
+    "32": "images/icon-32.png",
     "16": "images/icon-16.png"
   },
   "side_panel": {
     "default_path": "pages/sidepanel.html"
   },
-  "permissions": ["sidePanel", "contextMenus", "storage", "unlimitedStorage","tabs"],
+  "permissions": [
+    "sidePanel",
+    "contextMenus",
+    "storage",
+    "unlimitedStorage",
+    "tabs"
+  ],
   "commands": {
     "toggle": {
       "suggested_key": {

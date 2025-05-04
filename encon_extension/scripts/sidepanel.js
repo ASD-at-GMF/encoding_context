@@ -1,8 +1,10 @@
+// If word changes, set the new one.
 chrome.storage.session.get("lastWord", ({ lastWord }) => {
   // Get the last word from storage
   updateContext(lastWord);
 });
 
+// If word data changes, get the new one if possible.
 chrome.storage.session.onChanged.addListener((changes) => {
   // Listen for changes in storage
   const lastWordChange = changes["lastWord"];
@@ -14,7 +16,8 @@ chrome.storage.session.onChanged.addListener((changes) => {
   updateContext(lastWordChange.newValue);
 });
 
-// Update the side panel with the word's context
+// Update the side panel with the word's context and information.
+// Gets information from word finder through service worker.
 function updateContext(word) {
   // If the side panel was opened manually, rather than using the context menu,
   // we might not have a word to show the context for.
@@ -82,12 +85,14 @@ function updateContext(word) {
   });
 }
 
+// Function to get the list_colors from local storage.
 async function get_colors() {
   const data = await chrome.storage.local.get("data") ;
   list_colors = new Map(Object.entries(data.data.list_colors));
 }
 get_colors();
 
+// Map of list_colors
 let list_colors = new Map();
 
 // Function to determine best text color based on background color
