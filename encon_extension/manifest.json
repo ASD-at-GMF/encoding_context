@@ -42,7 +42,6 @@
       "matches": ["http://*.com/*", "<all_urls>"],
       "js": [
         "node_modules/mark.js/dist/mark.js",
-        "scripts/words.js",
         "scripts/word_finder.js"
       ],
       "css": ["styles/word_finder.css"]
