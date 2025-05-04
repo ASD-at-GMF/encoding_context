@@ -45,7 +45,6 @@ chrome.commands.onCommand.addListener((command) => {
 const toggle_word_finder = () => {
   chrome.storage.sync.get("on", function (on) {
     // Get the current state of the word finder
-    // console.log(on.on);
     var on_new = !on.on;
     chrome.storage.sync.set({ on: on_new }); // Save the new state of the word finder
 
@@ -75,8 +74,7 @@ const toggle_word_finder = () => {
 // Needs to set it in sync storage, and turn off dynamic highlighting.
 const toggle_dynamic_highlight = () => {
   chrome.storage.sync.get("dynamic", function (dynamic) {
-    // Get the current state of the word finder
-    // console.log(on.on);
+    // Get the current state of the dynamic highlight
     var dynamic_new = !dynamic.dynamic;
     chrome.storage.sync.set({ dynamic: dynamic_new }); // Save the new state of the word finder
 
@@ -164,12 +162,6 @@ async function get_data() {
         }
       }
       data.list_colors = Object.fromEntries(list_colors);
-
-      // // Check if json.words exists
-      // if (!json || !json.lists) {
-      //   console.error("Invalid response format");
-      //   return;
-      // }
 
       chrome.storage.local.set({ data }, () => {
         var error = chrome.runtime.lastError;
