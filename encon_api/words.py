@@ -1,3 +1,4 @@
+# Deprecated for now; might still want it for backend word searching
 class Word:
     def __init__(self, word, definition, classifications, adlLink, definition_long):
             self.word = word
@@ -13,6 +14,7 @@ class Word:
         # return {self.word:{'definition': self.definition, 'classifications': self.classifications, 'adlLink': self.adlLink}}
         return {'definition': self.definition, 'definition_long': self.definition_long, 'classifications': self.classifications, 'adlLink': self.adlLink}
 
+# Deprecated for now; might still want it for backend word searching
 class WordList:
     def __init__(self):
             self.list = {}
@@ -26,6 +28,7 @@ class WordList:
     def to_dict(self):
         return {'words': self.list}
 
+# List of lists; to_dict brings it to JSON format
 class TermLists:
     def __init__(self, list_names=[]):
         self.List = []
@@ -37,9 +40,12 @@ class TermLists:
     def to_dict(self):
         return {"lists": self.List}
 
+# Single list of terms; to_dict brings it to JSON format
 class TermList:
-    def __init__(self, list_name, tags="", id=0):
+    def __init__(self, list_name, description="", color="", tags="", id=0):
         self.list_name = list_name
+        self.description = description
+        self.color = color
         self.tags = tags
         self.id = id
         self.terms = []
@@ -47,8 +53,9 @@ class TermList:
         # self.terms[term.term] = term.to_dict()
         self.terms.append(term.to_dict())
     def to_dict(self):
-        return {"listId": self.id, "listName": self.list_name, "tags": self.tags, "terms": self.terms}
+        return {"listId": self.id, "listName": self.list_name, "description": self.description, "color": self.color, "tags": self.tags, "terms": self.terms}
 
+# Single Term; to_dict brings it to JSON format
 class Term:
     def __init__(self, term, short_definition, long_definition, wiki_link, sites, aliases, regex_pattern, additional_info, term_id=0):
         self.term = term

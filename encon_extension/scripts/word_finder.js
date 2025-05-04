@@ -15,7 +15,8 @@ var extensionOptions = {
   label_color: "#ff6c6c",
 };
 
-// Clear all words from the page
+// Clear all words from the page.
+// Unmarks all words within the instance that by default is the whole document.
 function clearWords(instance = new Mark(document)) {
   instance.unmark(); // Remove all highlights from the page
 
@@ -25,6 +26,9 @@ function clearWords(instance = new Mark(document)) {
   }
 }
 
+// Main function to find words on the page. Takes a default full page instance, and searches for words.
+// It uses the previously set Word Map, and loops through it, setting all the words.
+// Then, goes through all marks, and creates/sets tooltips with correct highlighting.
 function findWords(words, instance = new Mark(document)) {
   const highlightStyles = extensionOptions.highlight_style || [];
   const highlightColor = extensionOptions.hightlight_color || "#ffecb3";
@@ -116,6 +120,9 @@ function findWords(words, instance = new Mark(document)) {
   });
 }
 
+// Takes an element and its word, as well as the updating tooltipmap.
+// If it's a new word, add a new tooltip.
+// Otherwise, simply add the tooltip and all the information and highlighting.
 function setUpElement(element, word, tooltipMap) {
     if (!tooltipMap.has(word)) {
       // If the tooltip doesn't exist, create it
@@ -161,6 +168,7 @@ function setUpElement(element, word, tooltipMap) {
     let tooltip = tooltipMap.get(word);
     let hideTimer;
 
+    // Function on the marked word that shows the tooltip. When hovering the word, this will show.
     const showTooltip = () => {
       // Show the tooltip
       tooltip.style.visibility = "visible";
@@ -191,12 +199,14 @@ function setUpElement(element, word, tooltipMap) {
       resetHideTimer();
     };
 
+    // Function to keep the tooltip visible when the mouse is over it.
     const resetHideTimer = () => {
       if (hideTimer) {
         clearTimeout(hideTimer);
       }
     };
 
+    // Function to make the tooltip invisilbe when the mouse is off of it.
     const hideTooltip = () => {
       hideTimer = setTimeout(() => {
         if (!tooltip.matches(":hover") && !element.matches(":hover")) {
@@ -241,7 +251,7 @@ function setUpElement(element, word, tooltipMap) {
 
     tooltip
         .querySelector(".open-sidepanel-button")
-        .addEventListener("click", function () {
+        .addEventListener("click", function () { // Open side panel on tooltip click
           chrome.runtime.sendMessage({
             action: "open_side_panel",
             word: word,
@@ -257,7 +267,10 @@ function setUpElement(element, word, tooltipMap) {
 
 let on_var = false;
 let dynamic_var = false;
-// Main function to toggle the word finder
+
+// Main function to toggle the word finder.
+// on_var corresponds to Toggle Word finder from popup options.
+// dynamic_var corresponds to similar dynamic highlighting toggle.
 function main(on) {
   if (on === true) {
     on_var = true;
@@ -270,6 +283,10 @@ function main(on) {
   }
   return true;
 }
+
+// Below is some code for handling the dynamic highlighting using MutationObserver.
+// When mutation is detected, update the content if it is not a tooltip.
+
 const targetNode = document;
 const config = { subtree: true, childList: true };
 const callback = function (mutationsList, observer) {
@@ -303,7 +320,8 @@ function calculateBrightness(r, g, b) {
   return Math.round((r * 299 + g * 587 + b * 114) / 1000);
 }
 
-// Updates the highlight color on the page
+// Updates the highlight color on the page.
+// Uses list_colors gotten from service worker's local storage.
 function updateHighlightColors(highlightColor) {
   const isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches; // Get the current color scheme
 
@@ -357,7 +375,8 @@ function updateHighlightColors(highlightColor) {
   extensionOptions.hightlight_color = highlightColor;
 }
 
-// Updates the label color on the page
+// Updates the label color on the page.
+// Similar to highlighting, also gets info from local storage colors.
 function updateLabelColors(labelColor) {
   // Calculate contrast text color
   const rgb = hexToRgb(labelColor);
@@ -403,7 +422,8 @@ function updateLabelColors(labelColor) {
   extensionOptions.label_color = labelColor;
 }
 
-// Message listener for extension events
+// Message listener for extension events.
+// Listens to events from Service worker.
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "toggle_word_finder") {
     main(message.on);
@@ -472,7 +492,8 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
   }
 });
 
-// Function to initialize the extension
+// Function to initialize the extension.
+// Looks at options data from Chrome Sync data, and sets it in word finding.
 function initializeExtension() {
   // Get options and extension state from storage
   chrome.storage.sync.get(["options", "on"], function (data) {
@@ -511,6 +532,8 @@ const wordlists = [];
 let words = new Map();
 let list_colors = new Map();
 
+// Function to look at Local Chrome Storage, and sets that data properly.
+// Specifically, this gets the words from the words API call and list_colors.
 async function initializeData() {
   let host = window.location.host.replace(/^www\./, "");
   const data = await chrome.storage.local.get("data");
@@ -550,15 +573,17 @@ async function initializeData() {
   main(on_var);
 }
 
+// Get initial word_finder toggle to see if it should be on.
 chrome.storage.sync.get("on", function (on) { // Get the current state of the word finder
   console.log(on.on);
   on_var = on.on;
 });
 
+// Get initial dynamic highlighting toggle to see if it should be on.
 chrome.storage.sync.get("dynamic", function (dynamic) { // Get the current state of the word finder
   dynamic_var = dynamic.dynamic;
 });
 
-// Run initialization
-initializeData();
-initializeExtension();
+// Run initialization; for data and options
+initializeData(); // Data
+initializeExtension(); // Options

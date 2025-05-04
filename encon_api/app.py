@@ -25,6 +25,7 @@ def tags():
     return jsonify({'tags' : tags})
 
 '''
+DEPRECATED
 POST API call to get words
 Pass in data with 'text' and 'classifications' list
 'text' will be html body text, 'classifications' comes from user tag settings
@@ -41,7 +42,7 @@ def words():
             return jsonify({'error': 'Missing Text or Classifications'}), 400
     else:
         return 'POST Requests Only', 405
-
+# DEPRECATED; keeping for possible word finding in backend
 @app.route('/word')
 def word():
     term = request.args.get('term', default = "", type = str)
@@ -52,6 +53,15 @@ def word():
 
 db = Database()
 
+'''
+IMPORTANT: Main API Call
+GET API call to get words
+Pass in the categories that the user would like to display.
+Returns data for chrome extension intialization:
+- All the list names.
+- Corresponding list colors
+- All of the terms in the selected lists.
+'''
 @app.route('/wordlist')
 def wordlist():
     tags = request.args.getlist('tag')
@@ -60,8 +70,8 @@ def wordlist():
     db.get_lists(termlists)
     # return termlists.to_dict(), 200;
     # tags = ["Technical","Verification","Work","Action","Assignment","Duty","Job","Very Large String For Testing Purposes","Small word"]
-    tags = db.get_all_list_names();
+    tags = db.get_all_list_names_and_colors();
     # return jsonify({'tags' : tags})
-    return {"tags" : tags, "lists": termlists.List}, 200;
+    return {"tags" : tags[0], "colors": tags[1], "lists": termlists.List}, 200;
 
 
