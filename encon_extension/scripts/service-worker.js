@@ -7,26 +7,27 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
   windowId = activeInfo.windowId;
 });
 
-// to receive messages from popup script
+// Main service worker listening script
+// Receives messages from popup, options, and word_finder scripts.
 chrome.runtime.onMessage.addListener((message, sender) => {
   (async () => {
-    if (message.action === "open_side_panel") {
+    if (message.action === "open_side_panel") {     // Open side panel from word_finder
       chrome.sidePanel.open({ windowId: windowId, tabId: sender.tab.id });
       chrome.storage.session.set({ lastWord: message.word });
       chrome.storage.session.set({ wordDetails: message.wordDetails });
       console.log(message.wordDetails);
-    } else if (message.action === "toggle_word_finder") {
+    } else if (message.action === "toggle_word_finder") {     // Toggles from popup
       toggle_word_finder();
     }else if (message.action === "toggle_dynamic_highlight") {
       toggle_dynamic_highlight();
-    } else if (message.action === "reload_data") {
+    } else if (message.action === "reload_data") {     // Reload data from options
       console.log("Reload");
       get_data();
     }
   })();
 });
 
-// Listen for keyboard shortcuts
+// Listen for keyboard shortcuts. Right now just the word finder toggle.
 chrome.commands.onCommand.addListener((command) => {
   if (command === "toggle") {
     // Send toggle to popup
@@ -39,6 +40,8 @@ chrome.commands.onCommand.addListener((command) => {
   }
 });
 
+// Code to handle when the word finder is toggled.
+// Needs to set it in sync storage, and turn off word_finders.
 const toggle_word_finder = () => {
   chrome.storage.sync.get("on", function (on) {
     // Get the current state of the word finder
@@ -68,6 +71,8 @@ const toggle_word_finder = () => {
   });
 };
 
+// Code to handle when the dynamic highlighting is toggled.
+// Needs to set it in sync storage, and turn off dynamic highlighting.
 const toggle_dynamic_highlight = () => {
   chrome.storage.sync.get("dynamic", function (dynamic) {
     // Get the current state of the word finder
@@ -97,16 +102,20 @@ const toggle_dynamic_highlight = () => {
   });
 };
 
+// Get API words data on chrome extension startup.
 chrome.runtime.onStartup.addListener(async function () {
   console.log("open");
   await get_data();
 });
 
+// Get API words data on chrome extension install.
 chrome.runtime.onInstalled.addListener(async function () {
   console.log("Installed");
   await get_data();
 });
 
+// Function to get word data from API.
+// This does the important API call, and then fills the local chrome storage with correct information.
 async function get_data() {
   var classifications = [];
   chrome.storage.sync.get(["options", "on"], async function (options) {

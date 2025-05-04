@@ -46,6 +46,7 @@ async function updateLabelColorsInTabs(color) {
 }
 
 // Saves options to chrome.storage
+// Takes page level options variable which has been updated and sets it to Sync Storage.
 const saveOptions = () => {
   // Store previous color values
   const previousHighlightColor = options.hightlight_color;
@@ -70,7 +71,7 @@ const saveOptions = () => {
   status.className = "saving";
 
   chrome.storage.sync.set({ options }, () => {
-    makeChips()
+    makeChips();
     // Check for any errors
     if (chrome.runtime.lastError) {
       console.error("Error saving options:", chrome.runtime.lastError);
@@ -107,6 +108,8 @@ const saveOptions = () => {
   });
 };
 
+// Function to restore the options from the Chrome Sync Storage.
+// Gets data from any synced options, and if they exist set them on the page, otherwise set to default.
 async function restoreOptions() {
   const data = await chrome.storage.sync.get("options");
   Object.assign(options, data.options); // Merge data into options cache
@@ -129,6 +132,8 @@ async function restoreOptions() {
   fillTagSelect(options.classifications);
 }
 
+// Function to make the classification tags from collected data.
+// Also sets the proper color from list_color data.
 function makeChips() {
   console.log(options.label_color_color);
   const classificationLabelsContainer = document.body.querySelector(
@@ -147,6 +152,7 @@ function makeChips() {
   });
 }
 
+// Function to remove classification tag / chip here when it is clicked.
 //When a chip is clicked, remove it from list of tags, but add it back to the selectable tags list
 function chipRemove(newTag) {
   newTag.addEventListener("click", function () {
@@ -162,14 +168,17 @@ function chipRemove(newTag) {
   });
 }
 
+// List_colors to get from data
 let list_colors = new Map();
 
+// Function to fill the tags that can be selected with initial data.
+// Uses tag data gotten from Service Worker and local storage.
 async function fillTagSelect(selectedTags) {
   await chrome.storage.local.get("data", function (data) {
     if (data.data && data.data.tags) {
       let tags = data.data.tags;
       list_colors = new Map(Object.entries(data.data.list_colors));
-      makeChips()
+      makeChips();
       // try {
       //   // const url = "http://localhost:3000/status";
       //   // const url = "https://pbenzoni.pythonanywhere.com/status";
@@ -194,13 +203,10 @@ async function fillTagSelect(selectedTags) {
       });
     }
   });
-  // .then(console.log(tags));
-
-  // } catch (error) {
-  //   console.error("Error: " + error.message);
-  // }
 }
 
+// Code that runs when a tag is selected.
+// The select option is removed and the tag's chip is made.
 tagSelect = document.getElementById("tag-select");
 tagSelect.onchange = function () {
   //Event handler for when a tag is selected
@@ -216,6 +222,8 @@ tagSelect.onchange = function () {
 document.addEventListener("DOMContentLoaded", restoreOptions); //Restore options when the page is loaded
 document.getElementById("save").addEventListener("click", saveOptions); //Save options when the save button is clicked
 
+// Unused function just to see if the server is running.
+// Initially used for testing, but could be useful in the future.
 async function getStatus() {
   //Check if the server is running
   try {
