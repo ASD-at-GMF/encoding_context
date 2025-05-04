@@ -29,6 +29,7 @@ function updateContext(word) {
     // Get the word details from storage
     console.log("Word details in sidepanel:", wordDetails);
     console.log("Long definition:", wordDetails?.definition_long);
+    document.body.querySelector("#definition-aliases").innerText = "";
     if (!wordDetails) {
       // If there are no word details, give default message and return
       document.body.querySelector("#definition-word").innerText = word;
