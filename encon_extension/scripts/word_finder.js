@@ -88,10 +88,8 @@ function findWords(words, instance = new Mark(document)) {
   });
   const links = document.querySelectorAll('a');
   links.forEach((link) => {
-    // console.log(link.hostname);
     if (window.location.hostname !== link.hostname && words.get(link.hostname)) {
       let small_instance = new Mark(link);
-      // console.log(link.innerText);
       small_instance.mark(link.innerText, {
         separateWordSearch: false,
         className: `encon-highlight ${highlightStyles.join(" ")}`,
