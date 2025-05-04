@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mark.js": "8.11.1",
-    "marked": "^15.0.8"
+    "mark.js": "8.11.1"
   }
 }
